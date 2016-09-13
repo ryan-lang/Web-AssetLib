@@ -1,0 +1,1 @@
+var testfunc=function(){console.log('do something');};var testfunc=function(){console.log('do something');};
