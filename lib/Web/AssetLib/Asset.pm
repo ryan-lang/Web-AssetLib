@@ -34,14 +34,16 @@ has 'input_args' => (
 
 # private attrs:
 
-has '_contents' => (
-    is  => 'rw',
-    isa => 'Str'
+has 'contents' => (
+    is     => 'ro',
+    isa    => 'Str',
+    writer => 'set_contents'
 );
 
-has '_digest' => (
-    is  => 'rw',
-    isa => 'Str'
+has 'digest' => (
+    is     => 'ro',
+    isa    => 'Str',
+    writer => 'set_digest'
 );
 
 has 'isMinified' => (

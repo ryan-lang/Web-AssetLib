@@ -24,7 +24,7 @@ has 'html_path' => (
     required => 1
 );
 
-method export ($bundle!) {
+method export (:$bundle!, :$minifier?) {
 
     # group by type
     my $types;
@@ -36,22 +36,36 @@ method export ($bundle!) {
 
     my @tags;
     foreach my $type ( keys %$types ) {
-        my @output_contents;
+        my $output_contents;
 
         my $digest = Digest->new("MD5");
 
         foreach my $asset ( @{ $$types{$type} } ) {
-            $digest->add( $asset->_contents );
-            push @output_contents, $asset->_contents;
+            $digest->add( $asset->contents );
+            $output_contents .= $asset->contents;
         }
 
         my $output_path
             = path( $self->output_path )
             ->child( $digest->hexdigest . ".$type" );
-        $output_path->touchpath;
 
-        $output_path->append(@output_contents);
         push @tags, '<html string>';
+        if ( $output_path->exists ) {
+            next;
+        }
+        else {
+            $output_path->touchpath;
+
+            if ($minifier) {
+                $output_contents = $minifier->minify(
+                    contents => $output_contents,
+                    type     => $type
+                );
+            }
+
+            $output_path->spew_utf8($output_contents);
+        }
+
     }
 
     return \@tags;

@@ -63,15 +63,10 @@ method _build_javascript_module {
         "no Javascript minifier found (requires JavaScript::Minifier::XS or JavaScript::Minifier)";
 }
 
-method minify ($asset!) {
-    my $type = Web::AssetLib::Util::normalizeType( $asset->type );
-
+method minify (:$contents!,:$type!) {
     croak "type $type minifier not found" unless $self->minifiers->{$type};
 
-    my $output = $self->minifiers->{$type}->( $asset->_contents );
-
-    $asset->isMinified(1);
-    $asset->_contents($output);
+    return $self->minifiers->{$type}->($contents);
 }
 
 no Moose;

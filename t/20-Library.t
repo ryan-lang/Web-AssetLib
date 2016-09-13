@@ -30,7 +30,7 @@ BEGIN {
             $bundle->addAsset( $library->testjs );
             $bundle->addAsset( $library->testcss );
         }
-        "creates bundle and adds asset";
+        "creates bundle and adds assets";
 
         lives_ok {
             my $output = $library->compile(
@@ -40,6 +40,21 @@ BEGIN {
             $self->log->dump( 'bundle=', $output, 'info' );
         }
         "compiles bundle";
+
+        lives_ok {
+            $bundle = Web::AssetLib::Bundle->new();
+
+            $bundle->addAsset( $library->testjs );
+            $bundle->addAsset( $library->testcss );
+            $bundle->addAsset( $library->testcss );
+
+            my $output = $library->compile(
+                bundle          => $bundle,
+                minifier_engine => 'Standard'
+            );
+            $self->log->dump( 'bundle=', $output, 'info' );
+        }
+        "prevents adding same asset twice";
     }
 
     1;

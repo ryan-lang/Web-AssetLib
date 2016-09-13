@@ -22,11 +22,19 @@ method load ($asset!) {
 
     my $path = $self->_findAssetPath($asset);
 
-    my $contents = $path->slurp_utf8;
-    my $digest   = $path->digest;
+    my $digest = $path->digest;
 
-    $asset->_contents( $contents );
-    $asset->_digest($digest);
+    # will return undef if asset not in cache,
+    # otherwise will return contents from previous read
+    my $contents = $self->getAssetFromCache($digest);
+
+    unless ($contents) {
+        $contents = $path->slurp_utf8;
+        $self->addAssetToCache( $digest => $contents );
+    }
+
+    $asset->set_digest($digest);
+    $asset->set_contents($contents);
 }
 
 # search all the included search paths for the asset
