@@ -2,6 +2,8 @@ package Web::AssetLib::InputEngine;
 
 use Moose;
 
+with 'Web::AssetLib::Role::Logger';
+
 has 'asset_cache' => (
     is      => 'rw',
     isa     => 'HashRef',

@@ -4,6 +4,7 @@ use Method::Signatures;
 use Moose;
 use Digest;
 use Carp;
+use Encode qw(encode_utf8);
 
 use Web::AssetLib::Util;
 
@@ -18,58 +19,71 @@ has 'output_path' => (
 );
 
 # should correspond with the root of output_path
-has 'html_path' => (
+has 'link_path' => (
     is       => 'rw',
     isa      => 'Str',
     required => 1
 );
 
-method export (:$bundle!, :$minifier?) {
-
-    # group by type
-    my $types;
-    foreach my $asset ( $bundle->allAssets ) {
-        push @{ $$types{ Web::AssetLib::Util::normalizeType( $asset->type ) }
-        }, $asset;
-    }
-    $self->log->dump( 'types=', $types, 'trace' );
+method export (:$bundle!, :$minifier?, :$type?) {
+    my $types = $bundle->groupByType();
 
     my @tags;
-    foreach my $type ( keys %$types ) {
-        my $output_contents;
+    if ($type) {
 
-        my $digest = Digest->new("MD5");
-
-        foreach my $asset ( @{ $$types{$type} } ) {
-            $digest->add( $asset->contents );
-            $output_contents .= $asset->contents;
+        # if type is provided, export only that
+        my $tag = $self->_exportByType(
+            assets   => $$types{$type},
+            type     => $type,
+            minifier => $minifier
+        );
+        push @tags, $tag;
+    }
+    else {
+        # if type is NOT provided, export all
+        foreach $type ( keys %$types ) {
+            my $tag = $self->_exportByType(
+                assets   => $$types{$type},
+                type     => $type,
+                minifier => $minifier
+            );
+            next unless $tag;
+            push @tags, $tag;
         }
-
-        my $output_path
-            = path( $self->output_path )
-            ->child( $digest->hexdigest . ".$type" );
-
-        push @tags, '<html string>';
-        if ( $output_path->exists ) {
-            next;
-        }
-        else {
-            $output_path->touchpath;
-
-            if ($minifier) {
-                $output_contents = $minifier->minify(
-                    contents => $output_contents,
-                    type     => $type
-                );
-            }
-
-            $output_path->spew_utf8($output_contents);
-        }
-
     }
 
     $bundle->html_links( \@tags );
     return $bundle;
+}
+
+method _exportByType (:$assets!, :$type!, :$minifier?) {
+    my $output_contents;
+
+    my $digest = Digest->new("MD5");
+
+    foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
+        $digest->add( encode_utf8( $asset->contents ) );
+        $output_contents .= $asset->contents;
+    }
+
+    my $filename    = $digest->hexdigest . ".$type";
+    my $output_path = path( $self->output_path )->child($filename);
+    my $link_path   = path( $self->link_path )->child($filename);
+
+    unless ( $output_path->exists ) {
+        $output_path->touchpath;
+
+        if ($minifier) {
+            $output_contents = $minifier->minify(
+                contents => $output_contents,
+                type     => $type
+            );
+        }
+
+        $output_path->spew_utf8($output_contents);
+    }
+
+    return $self->generateHtmlTag( src => $link_path, type => $type );
 }
 
 no Moose;

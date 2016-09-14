@@ -31,23 +31,33 @@ has 'output_engines' => (
         { _findOutputEngine => 'first', allOutputEngines => 'elements' }
 );
 
-method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine?) {
+method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine?, :$type?) {
     $minifier_engine = $self->findMinifierEngine($minifier_engine)
         if $minifier_engine;
 
-    # TODO: sort by rank
-    foreach my $asset ( $bundle->allAssets ) {
+    my $types = $bundle->groupByType();
+    my $assets = $type ? $$types{$type} : [ $bundle->allAssets ];
+
+    $self->log->dump( 'attempting to compile assets=', $assets, 'trace' );
+
+    foreach my $asset (@$assets) {
         my $input_engine = $self->findInputEngine( $asset->input_engine );
 
         # populate contents and digest attributes
         $input_engine->load($asset);
 
-        # if digest is present in the digest map,
-        # we have two assets with identical contents,
-        # but different names. delete the newest one.
+        # bundle should not contain assets with matching
+        # fingerprints, but it's possible that two assets
+        # can have different fingerprints, but the same digest
+        # (same file, different parameters)
 
         if ( $bundle->getDigest( $asset->digest ) ) {
-            $bundle->deleteAsset( $asset->name );
+            my $idx
+                = $bundle->findAssetIdx( sub { $_->digest eq $asset->digest }
+                );
+            $bundle->deleteAsset($idx);
+            $self->log->dump( 'duplicate digest found for asset=',
+                $bundle->getAsset($idx), 'trace' );
         }
         else {
             $bundle->addDigest( $asset->digest => 1 );
@@ -58,13 +68,9 @@ method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine?) {
     $output_engine = $self->findOutputEngine($output_engine);
     return $output_engine->export(
         bundle   => $bundle,
-        minifier => $minifier_engine
+        minifier => $minifier_engine,
+        type     => $type
     );
-}
-
-method compileType () {
-
-    # compile but filter original assets list by type
 }
 
 method compileAsset ($asset!) {

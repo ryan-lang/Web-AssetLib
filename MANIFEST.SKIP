@@ -1,0 +1,22 @@
+^vendor
+^local
+^\.
+^MYMETA\.yml$
+^MYMETA\.json$
+.DS_Store
+
+^t/output/.+\.js
+^t/output/.+\.css
+
+# Avoid Module::Build generated and utility files.
+\bBuild$
+\bBuild.bat$
+\b_build
+\bBuild.COM$
+\bBUILD.COM$
+\bbuild.com$
+^MANIFEST\.SKIP
+^blib
+
+# Avoid archives of this distribution
+\bWeb-AssetLib-v[\d\.\_]+

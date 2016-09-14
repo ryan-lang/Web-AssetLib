@@ -1,15 +1,27 @@
 package Web::AssetLib::Asset;
 
 use Moose;
+use Data::Dumper;
+use Digest::MD5 'md5_hex';
 
-has 'name' => (
-    is  => 'rw',
-    isa => 'Maybe[Str]'
+has 'fingerprint' => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        local $Data::Dumper::Terse = 1;
+        my $string = sprintf( '%s%s%s',
+            $self->type, $self->input_engine, Dumper( $self->input_args ) );
+        $string =~ s/\s//g;
+        return md5_hex $string;
+    }
 );
 
 has 'rank' => (
-    is  => 'rw',
-    isa => 'Maybe[Int]'
+    is      => 'rw',
+    isa     => 'Num',
+    default => 0
 );
 
 # javascript, css
@@ -21,9 +33,9 @@ has 'type' => (
 
 # the engine that knows what to do
 has 'input_engine' => (
-    is       => 'rw',
-    isa      => 'Str',
-    required => 1
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'LocalFile'
 );
 
 has 'input_args' => (
@@ -44,12 +56,6 @@ has 'digest' => (
     is     => 'ro',
     isa    => 'Str',
     writer => 'set_digest'
-);
-
-has 'isMinified' => (
-    is      => 'rw',
-    isa     => 'Bool',
-    default => 0
 );
 
 no Moose;

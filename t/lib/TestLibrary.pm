@@ -32,7 +32,7 @@ has '+output_engines' => (
     default => sub {
         [   Web::AssetLib::OutputEngine::LocalFile->new(
                 output_path => "$Bin/output/",
-                html_path   => '/static/'
+                link_path   => '/static/'
             )
         ];
     }

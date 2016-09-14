@@ -40,6 +40,7 @@ method load ($asset!) {
 # search all the included search paths for the asset
 method _findAssetPath ($asset!) {
     foreach my $path ( $self->allSearchPaths ) {
+        next unless $path;
         $path = path($path);
 
         # does the root path exist?
