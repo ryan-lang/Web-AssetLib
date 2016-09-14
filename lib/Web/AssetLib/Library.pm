@@ -31,7 +31,7 @@ has 'output_engines' => (
         { _findOutputEngine => 'first', allOutputEngines => 'elements' }
 );
 
-method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine?, :$type?) {
+method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine = 'Standard', :$type?) {
     $minifier_engine = $self->findMinifierEngine($minifier_engine)
         if $minifier_engine;
 
