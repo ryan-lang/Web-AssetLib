@@ -5,7 +5,3 @@ requires 'MooseX::Log::Log4perl';
 requires 'Data::Dump';
 requires 'Path::Tiny';
 requires 'HTML::Element';
-
-requires 'JavaScript::Minifier::XS';
-requires 'CSS::Minifier::XS';
-requires 'LWP::Protocol::https';
