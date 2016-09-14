@@ -5,6 +5,8 @@ use Moose;
 use FindBin qw($Bin);
 
 use Web::AssetLib::InputEngine::LocalFile;
+use Web::AssetLib::InputEngine::RemoteFile;
+
 use Web::AssetLib::MinifierEngine::Standard;
 use Web::AssetLib::OutputEngine::LocalFile;
 
@@ -14,7 +16,8 @@ has '+input_engines' => (
     default => sub {
         [   Web::AssetLib::InputEngine::LocalFile->new(
                 search_paths => ["$Bin/assets/"]
-            )
+            ),
+            Web::AssetLib::InputEngine::RemoteFile->new()
         ];
     }
 );
@@ -35,21 +38,54 @@ has '+output_engines' => (
     }
 );
 
-sub testjs {
+sub testjs_local {
     return Web::AssetLib::Asset->new(
-        name         => 'testjs',
+        name         => 'testjs_local',
         type         => 'javascript',
         input_engine => 'LocalFile',
         input_args   => { path => 'test.js', }
     );
 }
 
-sub testcss {
+sub testcss_local {
     return Web::AssetLib::Asset->new(
-        name         => 'testcss',
+        name         => 'testcss_local',
         type         => 'css',
         input_engine => 'LocalFile',
         input_args   => { path => 'test.css', }
+    );
+}
+
+sub testjs_remote {
+    return Web::AssetLib::Asset->new(
+        name         => 'testjs_remote',
+        type         => 'javascript',
+        input_engine => 'RemoteFile',
+        input_args   => {
+            url =>
+                'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js',
+        }
+    );
+}
+
+sub testcss_remote {
+    return Web::AssetLib::Asset->new(
+        name         => 'testcss_remote',
+        type         => 'css',
+        input_engine => 'RemoteFile',
+        input_args   => {
+            url =>
+                'https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css',
+        }
+    );
+}
+
+sub missingjs_remote {
+    return Web::AssetLib::Asset->new(
+        name         => 'missingjs_remote',
+        type         => 'javascript',
+        input_engine => 'RemoteFile',
+        input_args   => { url => 'https://foo/bar', }
     );
 }
 

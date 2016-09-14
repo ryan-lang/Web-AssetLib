@@ -10,7 +10,8 @@ has 'assets' => (
     handles => {
         _addAsset   => 'set',
         allAssets   => 'values',
-        deleteAsset => 'delete'
+        deleteAsset => 'delete',
+        countAssets => 'count'
     }
 );
 
@@ -29,6 +30,12 @@ method addAsset (@assets) {
         $self->_addAsset( $_->name => $_ );
     }
 }
+
+has 'html_links' => (
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    default => sub { [] }
+);
 
 no Moose;
 1;

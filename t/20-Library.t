@@ -27,32 +27,32 @@ BEGIN {
         lives_ok {
             $bundle = Web::AssetLib::Bundle->new();
 
-            $bundle->addAsset( $library->testjs );
-            $bundle->addAsset( $library->testcss );
+            $bundle->addAsset( $library->testjs_local );
+            $bundle->addAsset( $library->testcss_local );
         }
         "creates bundle and adds assets";
 
         lives_ok {
-            my $output = $library->compile(
+            $library->compile(
                 bundle          => $bundle,
                 minifier_engine => 'Standard'
             );
-            $self->log->dump( 'bundle=', $output, 'info' );
         }
         "compiles bundle";
 
         lives_ok {
             $bundle = Web::AssetLib::Bundle->new();
 
-            $bundle->addAsset( $library->testjs );
-            $bundle->addAsset( $library->testcss );
-            $bundle->addAsset( $library->testcss );
+            $bundle->addAsset( $library->testjs_local );
+            $bundle->addAsset( $library->testcss_local );
+            $bundle->addAsset( $library->testcss_local );
 
-            my $output = $library->compile(
+            $library->compile(
                 bundle          => $bundle,
                 minifier_engine => 'Standard'
             );
-            $self->log->dump( 'bundle=', $output, 'info' );
+
+            die unless $bundle->countAssets == 2;
         }
         "prevents adding same asset twice";
     }

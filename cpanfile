@@ -7,3 +7,4 @@ requires 'Path::Tiny';
 
 requires 'JavaScript::Minifier::XS';
 requires 'CSS::Minifier::XS';
+requires 'LWP::Protocol::https';

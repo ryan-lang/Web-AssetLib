@@ -68,7 +68,8 @@ method export (:$bundle!, :$minifier?) {
 
     }
 
-    return \@tags;
+    $bundle->html_links( \@tags );
+    return $bundle;
 }
 
 no Moose;
