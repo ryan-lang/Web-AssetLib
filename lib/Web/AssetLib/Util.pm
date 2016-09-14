@@ -8,14 +8,18 @@ my %FILE_TYPES = (
     js         => 'js',
     javascript => 'js',
     css        => 'css',
-    stylesheet => 'css'
+    stylesheet => 'css',
+    jpeg       => 'jpg',
+    jpg        => 'jpg'
 );
 
 my %MIME_TYPES = (
     js         => 'text/javascript',
     javascript => 'text/javascript',
     css        => 'text/css',
-    stylesheet => 'text/css'
+    stylesheet => 'text/css',
+    jpg        => 'image/jpeg',
+    jpeg       => 'image/jpeg'
 );
 
 func normalizeFileType ($type!) {

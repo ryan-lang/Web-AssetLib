@@ -31,9 +31,37 @@ has 'output_engines' => (
         { _findOutputEngine => 'first', allOutputEngines => 'elements' }
 );
 
-method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine = 'Standard', :$type?) {
+method compile (:$bundle, :$asset, :$output_engine = 'LocalFile', 
+    :$minifier_engine = 'Standard', :$type?, :$html_attrs?) {
+
     $minifier_engine = $self->findMinifierEngine($minifier_engine)
         if $minifier_engine;
+    $output_engine = $self->findOutputEngine($output_engine);
+
+    if ( $asset && !$bundle ) {
+        return $self->_compileAsset(
+            asset           => $asset,
+            output_engine   => $output_engine,
+            minifier_engine => $minifier_engine
+        );
+    }
+    elsif ( $bundle && !$asset ) {
+        return $self->_compileBundle(
+            bundle          => $bundle,
+            output_engine   => $output_engine,
+            minifier_engine => $minifier_engine,
+            type            => $type
+        );
+    }
+    elsif ( $bundle && $asset ) {
+        croak "cannot provide both bundle and asset - dont know what to do";
+    }
+    else {
+        croak "either asset or bundle must be provided";
+    }
+}
+
+method _compileBundle (:$bundle!,:$output_engine!, :$minifier_engine?, :$type?) {
 
     my $types = $bundle->groupByType();
     my $assets = $type ? $$types{$type} : [ $bundle->allAssets ];
@@ -65,7 +93,6 @@ method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine = 'S
     }
 
     # output
-    $output_engine = $self->findOutputEngine($output_engine);
     return $output_engine->export(
         bundle   => $bundle,
         minifier => $minifier_engine,
@@ -73,8 +100,14 @@ method compile (:$bundle!, :$output_engine = 'LocalFile', :$minifier_engine = 'S
     );
 }
 
-method compileAsset ($asset!) {
+method _compileAsset (:$asset!,:$output_engine!, :$minifier_engine?) {
+    my $input_engine = $self->findInputEngine( $asset->input_engine );
+    $input_engine->load($asset);
 
+    return $output_engine->export(
+        asset    => $asset,
+        minifier => $minifier_engine
+    );
 }
 
 method findInputEngine ($name!) {

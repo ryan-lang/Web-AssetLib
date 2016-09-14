@@ -2,9 +2,7 @@ package Web::AssetLib::OutputEngine::LocalFile;
 
 use Method::Signatures;
 use Moose;
-use Digest;
 use Carp;
-use Encode qw(encode_utf8);
 
 use Web::AssetLib::Util;
 
@@ -25,50 +23,19 @@ has 'link_path' => (
     required => 1
 );
 
-method export (:$bundle!, :$minifier?, :$type?) {
-    my $types = $bundle->groupByType();
-
-    my @tags;
-    if ($type) {
-
-        # if type is provided, export only that
-        my $tag = $self->_exportByType(
-            assets   => $$types{$type},
-            type     => $type,
-            minifier => $minifier
-        );
-        push @tags, $tag;
-    }
-    else {
-        # if type is NOT provided, export all
-        foreach $type ( keys %$types ) {
-            my $tag = $self->_exportByType(
-                assets   => $$types{$type},
-                type     => $type,
-                minifier => $minifier
-            );
-            next unless $tag;
-            push @tags, $tag;
-        }
-    }
-
-    $bundle->html_links( \@tags );
-    return $bundle;
-}
-
 method _exportByType (:$assets!, :$type!, :$minifier?) {
-    my $output_contents;
 
-    my $digest = Digest->new("MD5");
-
-    foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
-        $digest->add( encode_utf8( $asset->contents ) );
-        $output_contents .= $asset->contents;
-    }
-
-    my $filename    = $digest->hexdigest . ".$type";
+    my ( $output_contents, $digest ) = $self->_concatAssets($assets);
+    my $filename    = "$digest.$type";
     my $output_path = path( $self->output_path )->child($filename);
     my $link_path   = path( $self->link_path )->child($filename);
+
+# # output pre-minify
+# my $output_path_debug = path( $self->output_path )->child($filename.".orig.$type");
+# unless($output_path_debug->exists){
+#     $output_path_debug->touchpath;
+#     $output_path_debug->spew_utf8($output_contents);
+# }
 
     unless ( $output_path->exists ) {
         $output_path->touchpath;
@@ -80,7 +47,7 @@ method _exportByType (:$assets!, :$type!, :$minifier?) {
             );
         }
 
-        $output_path->spew_utf8($output_contents);
+        $output_path->spew_raw($output_contents);
     }
 
     return $self->generateHtmlTag( src => $link_path, type => $type );

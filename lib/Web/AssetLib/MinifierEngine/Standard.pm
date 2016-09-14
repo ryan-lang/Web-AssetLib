@@ -23,6 +23,9 @@ has 'minifiers' => (
             css => sub {
                 my $minifier = \&{ $self->css_module . '::minify' };
                 return $minifier->( $_[0] );
+            },
+            jpg => sub {
+                return $_[0];
             }
         };
     }

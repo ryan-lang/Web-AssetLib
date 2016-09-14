@@ -1,6 +1,7 @@
 package Web::AssetLib::Asset;
 
 use Moose;
+use MooseX::Aliases;
 use Data::Dumper;
 use Digest::MD5 'md5_hex';
 
@@ -56,6 +57,12 @@ has 'digest' => (
     is     => 'ro',
     isa    => 'Str',
     writer => 'set_digest'
+);
+
+has 'html_link' => (
+    is    => 'rw',
+    isa   => 'Str',
+    alias => 'as_html'
 );
 
 no Moose;

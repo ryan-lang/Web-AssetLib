@@ -6,6 +6,9 @@ use Carp;
 
 use Path::Tiny;
 
+use v5.14;
+no if $] >= 5.018, warnings => "experimental";
+
 extends 'Web::AssetLib::InputEngine';
 
 has 'search_paths' => (
@@ -29,7 +32,10 @@ method load ($asset!) {
     my $contents = $self->getAssetFromCache($digest);
 
     unless ($contents) {
-        $contents = $path->slurp_utf8;
+
+        $contents = $path->slurp_raw;
+        $contents =~ s/\xef\xbb\xbf//; # remove BOM if exists
+
         $self->addAssetToCache( $digest => $contents );
     }
 
