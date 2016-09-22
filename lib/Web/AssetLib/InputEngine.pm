@@ -1,5 +1,6 @@
 package Web::AssetLib::InputEngine;
 
+use Method::Signatures;
 use Moose;
 
 with 'Web::AssetLib::Role::Logger';
@@ -14,6 +15,11 @@ has 'asset_cache' => (
         getAssetFromCache => 'get'
     }
 );
+
+method storeAssetContents (:$asset!,:$digest!,:$contents!) {
+    $asset->set_digest($digest);
+    $asset->set_contents($contents);
+}
 
 no Moose;
 1;

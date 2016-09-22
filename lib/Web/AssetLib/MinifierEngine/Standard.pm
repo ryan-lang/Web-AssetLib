@@ -24,7 +24,7 @@ has 'minifiers' => (
                 my $minifier = \&{ $self->css_module . '::minify' };
                 return $minifier->( $_[0] );
             },
-            jpg => sub {
+            _else => sub {
                 return $_[0];
             }
         };
@@ -66,10 +66,13 @@ method _build_javascript_module {
         "no Javascript minifier found (requires JavaScript::Minifier::XS or JavaScript::Minifier)";
 }
 
-method minify (:$contents!,:$type!) {
-    croak "type $type minifier not found" unless $self->minifiers->{$type};
-
-    return $self->minifiers->{$type}->($contents);
+method minify( :$contents!, :$type ) {
+    if ( $self->minifiers->{$type} ) {
+        return $self->minifiers->{$type}->($contents);
+    }
+    else {
+        $self->minifiers->{'_else'}->($contents);
+    }
 }
 
 no Moose;

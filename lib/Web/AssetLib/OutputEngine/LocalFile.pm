@@ -8,6 +8,9 @@ use Web::AssetLib::Util;
 
 use Path::Tiny;
 
+use v5.14;
+no if $] >= 5.018, warnings => "experimental";
+
 extends 'Web::AssetLib::OutputEngine';
 
 has 'output_path' => (
@@ -23,12 +26,45 @@ has 'link_path' => (
     required => 1
 );
 
-method _exportByType (:$assets!, :$type!, :$minifier?) {
+method export (:$assets!, :$minifier?) {
+    my $types        = {};
+    my $output_types = {};
 
-    my ( $output_contents, $digest ) = $self->_concatAssets($assets);
-    my $filename    = "$digest.$type";
-    my $output_path = path( $self->output_path )->child($filename);
-    my $link_path   = path( $self->link_path )->child($filename);
+    # categorize into type groups, and seperate concatenated
+    # assets from those that stand alone
+
+    foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
+        if ( $asset->isPassthru ) {
+            push @{ $$output_types{ $asset->type } }, $asset->link_path;
+        }
+        else {
+            for ( $asset->type ) {
+                when (/css|js/) {
+
+                    # should concatenate
+                    $$types{ $asset->type }{_CONCAT_}
+                        .= $asset->contents . "\n\r\n\r";
+                }
+                default {
+                    $$types{ $asset->type }{ $asset->digest }
+                        = $asset->contents;
+                }
+            }
+        }
+    }
+
+    foreach my $type ( keys %$types ) {
+        foreach my $id ( keys %{ $$types{$type} } ) {
+            my $output_contents = $$types{$type}{$id};
+
+            my $digest
+                = $id eq '_CONCAT_'
+                ? $self->generateDigest($output_contents)
+                : $id;
+
+            my $filename    = "$digest.$type";
+            my $output_path = path( $self->output_path )->child($filename);
+            my $link_path   = path( $self->link_path )->child($filename);
 
 # # output pre-minify
 # my $output_path_debug = path( $self->output_path )->child($filename.".orig.$type");
@@ -37,20 +73,24 @@ method _exportByType (:$assets!, :$type!, :$minifier?) {
 #     $output_path_debug->spew_utf8($output_contents);
 # }
 
-    unless ( $output_path->exists ) {
-        $output_path->touchpath;
+            unless ( $output_path->exists ) {
+                $output_path->touchpath;
 
-        if ($minifier) {
-            $output_contents = $minifier->minify(
-                contents => $output_contents,
-                type     => $type
-            );
+                if ($minifier) {
+                    $output_contents = $minifier->minify(
+                        contents => $output_contents,
+                        type     => $type
+                    );
+                }
+
+                $output_path->spew_raw($output_contents);
+            }
+
+            push @{ $$output_types{$type} }, "$link_path";
         }
-
-        $output_path->spew_raw($output_contents);
     }
 
-    return $self->generateHtmlTag( src => $link_path, type => $type );
+    return $output_types;
 }
 
 no Moose;

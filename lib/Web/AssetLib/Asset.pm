@@ -1,9 +1,11 @@
 package Web::AssetLib::Asset;
 
+use Method::Signatures;
 use Moose;
 use MooseX::Aliases;
 use Data::Dumper;
 use Digest::MD5 'md5_hex';
+use Web::AssetLib::Util;
 
 has 'fingerprint' => (
     is      => 'rw',
@@ -27,10 +29,16 @@ has 'rank' => (
 
 # javascript, css
 has 'type' => (
-    is       => 'rw',
+    is       => 'ro',
     isa      => 'Str',
     required => 1
 );
+
+around 'type' => sub {
+    my ( $orig, $self ) = @_;
+
+    return Web::AssetLib::Util::normalizeFileType( $self->$orig );
+};
 
 # the engine that knows what to do
 has 'input_engine' => (
@@ -43,6 +51,12 @@ has 'input_args' => (
     is      => 'rw',
     isa     => 'HashRef',
     default => sub { {} }
+);
+
+has 'isPassthru' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0
 );
 
 # private attrs:
@@ -59,11 +73,22 @@ has 'digest' => (
     writer => 'set_digest'
 );
 
-has 'html_link' => (
-    is    => 'rw',
-    isa   => 'Str',
-    alias => 'as_html'
+has 'link_path' => (
+    is  => 'rw',
+    isa => 'Str'
 );
+
+method as_html ( :$html_attrs = {} ) {
+    my $tag;
+    if ( $self->link_path ) {
+        $tag = Web::AssetLib::Util::generateHtmlTag(
+            src  => $self->link_path,
+            type => $self->type
+        );
+    }
+
+    return $tag;
+}
 
 no Moose;
 

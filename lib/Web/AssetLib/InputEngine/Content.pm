@@ -19,8 +19,11 @@ method load ($asset!) {
     my $digest = md5_hex $contents;
     $self->addAssetToCache( $digest => $contents );
 
-    $asset->set_digest($digest);
-    $asset->set_contents($contents);
+    $self->storeAssetContents(
+        asset    => $asset,
+        digest   => $digest,
+        contents => $contents
+    );
 }
 
 no Moose;

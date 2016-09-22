@@ -75,24 +75,36 @@ method addAsset (@assets) {
     }
 }
 
-has 'html_links' => (
+has 'link_paths' => (
     is      => 'rw',
-    isa     => 'ArrayRef',
-    default => sub { [] }
+    isa     => 'HashRef',
+    default => sub { {} }
 );
 
 method groupByType () {
     my $types;
     foreach my $asset ( $self->allAssets ) {
-        push
-            @{ $$types{ Web::AssetLib::Util::normalizeFileType( $asset->type )
-            } }, $asset;
+        push @{ $$types{ $asset->type } }, $asset;
     }
     return $types;
 }
 
-method as_html () {
-    return join( "\n", @{ $self->html_links } );
+method as_html ( :$type!, :$html_attrs = {} ) {
+
+    my @tags;
+    my $links = $self->link_paths->{$type};
+
+    if ( $links && ref $links eq 'ARRAY' ) {
+        foreach my $link (@$links) {
+            my $tag = Web::AssetLib::Util::generateHtmlTag(
+                src  => $link,
+                type => $type
+            );
+            push @tags, $tag;
+        }
+    }
+
+    return join( "\n", @tags );
 }
 
 method _checkForDuplicate ($asset!) {

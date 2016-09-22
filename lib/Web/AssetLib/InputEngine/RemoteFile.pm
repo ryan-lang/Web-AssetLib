@@ -8,8 +8,6 @@ use HTTP::Request;
 use LWP::UserAgent;
 use Digest::MD5 'md5_hex';
 
-use Path::Tiny;
-
 extends 'Web::AssetLib::InputEngine';
 
 has 'ua' => (
@@ -27,14 +25,23 @@ method load ($asset!) {
     croak sprintf( "%s requires 'url' asset input_arg", ref($self) )
         unless $asset->input_args->{url};
 
-    my $request = $self->buildRequest( url => $asset->input_args->{url} );
-    my $contents = $self->doRequest( request => $request );
+    if ( $asset->isPassthru ) {
+        $asset->link_path( $asset->input_args->{url} );
+        return;
+    }
+    else {
+        my $request = $self->buildRequest( url => $asset->input_args->{url} );
+        my $contents = $self->doRequest( request => $request );
 
-    my $digest = md5_hex $contents;
-    $self->addAssetToCache( $digest => $contents );
+        my $digest = md5_hex $contents;
+        $self->addAssetToCache( $digest => $contents );
 
-    $asset->set_digest($digest);
-    $asset->set_contents($contents);
+        $self->storeAssetContents(
+            asset    => $asset,
+            digest   => $digest,
+            contents => $contents
+        );
+    }
 }
 
 method buildRequest (:$url!) {

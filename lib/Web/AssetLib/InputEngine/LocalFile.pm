@@ -39,8 +39,11 @@ method load ($asset!) {
         $self->addAssetToCache( $digest => $contents );
     }
 
-    $asset->set_digest($digest);
-    $asset->set_contents($contents);
+    $self->storeAssetContents(
+        asset    => $asset,
+        digest   => $digest,
+        contents => $contents
+    );
 }
 
 # search all the included search paths for the asset

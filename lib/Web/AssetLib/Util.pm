@@ -3,6 +3,10 @@ package Web::AssetLib::Util;
 use Method::Signatures;
 use Moose;
 use Carp;
+use HTML::Element;
+
+use v5.14;
+no if $] >= 5.018, warnings => "experimental";
 
 my %FILE_TYPES = (
     js         => 'js',
@@ -38,6 +42,33 @@ func normalizeMimeType ($type!) {
     else {
         croak "could not map type '$type'";
     }
+}
+
+func generateHtmlTag (:$src!, :$type!) {
+    my $mime = normalizeMimeType($type);
+    my $el;
+    for ($mime) {
+        when ('text/css') {
+            $el = HTML::Element->new(
+                'link',
+                href => $src,
+                rel  => 'stylesheet',
+                type => $mime
+            );
+        }
+        when ('text/javascript') {
+            $el = HTML::Element->new(
+                'script',
+                src  => $src,
+                type => $mime
+            );
+        }
+        when ('image/jpeg') {
+            $el = HTML::Element->new( 'img', src => $src );
+        }
+    }
+
+    return $el->as_HTML;
 }
 
 no Moose;

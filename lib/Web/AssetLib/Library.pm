@@ -32,7 +32,7 @@ has 'output_engines' => (
 );
 
 method compile (:$bundle, :$asset, :$output_engine = 'LocalFile', 
-    :$minifier_engine = 'Standard', :$type?, :$html_attrs?) {
+    :$minifier_engine = 'Standard') {
 
     $minifier_engine = $self->findMinifierEngine($minifier_engine)
         if $minifier_engine;
@@ -49,8 +49,7 @@ method compile (:$bundle, :$asset, :$output_engine = 'LocalFile',
         return $self->_compileBundle(
             bundle          => $bundle,
             output_engine   => $output_engine,
-            minifier_engine => $minifier_engine,
-            type            => $type
+            minifier_engine => $minifier_engine
         );
     }
     elsif ( $bundle && $asset ) {
@@ -61,14 +60,12 @@ method compile (:$bundle, :$asset, :$output_engine = 'LocalFile',
     }
 }
 
-method _compileBundle (:$bundle!,:$output_engine!, :$minifier_engine?, :$type?) {
+method _compileBundle (:$bundle!, :$output_engine!, :$minifier_engine?) {
 
-    my $types = $bundle->groupByType();
-    my $assets = $type ? $$types{$type} : [ $bundle->allAssets ];
+    $self->log->dump( 'attempting to compile assets=',
+        $bundle->assets, 'trace' );
 
-    $self->log->dump( 'attempting to compile assets=', $assets, 'trace' );
-
-    foreach my $asset (@$assets) {
+    foreach my $asset ( $bundle->allAssets ) {
         my $input_engine = $self->findInputEngine( $asset->input_engine );
 
         # populate contents and digest attributes
@@ -79,24 +76,25 @@ method _compileBundle (:$bundle!,:$output_engine!, :$minifier_engine?, :$type?) 
         # can have different fingerprints, but the same digest
         # (same file, different parameters)
 
-        if ( $bundle->getDigest( $asset->digest ) ) {
-            my $idx
-                = $bundle->findAssetIdx( sub { $_->digest eq $asset->digest }
-                );
-            $bundle->deleteAsset($idx);
-            $self->log->dump( 'duplicate digest found for asset=',
-                $bundle->getAsset($idx), 'trace' );
-        }
-        else {
-            $bundle->addDigest( $asset->digest => 1 );
+        if ( $asset->digest ) {
+            if ( $bundle->getDigest( $asset->digest ) ) {
+                my $idx
+                    = $bundle->findAssetIdx(
+                    sub { $_->digest eq $asset->digest } );
+                $bundle->deleteAsset($idx);
+                $self->log->dump( 'duplicate digest found for asset=',
+                    $bundle->getAsset($idx), 'trace' );
+            }
+            else {
+                $bundle->addDigest( $asset->digest => 1 );
+            }
         }
     }
 
     # output
-    return $output_engine->export(
+    return $output_engine->_export(
         bundle   => $bundle,
-        minifier => $minifier_engine,
-        type     => $type
+        minifier => $minifier_engine
     );
 }
 
@@ -104,7 +102,7 @@ method _compileAsset (:$asset!,:$output_engine!, :$minifier_engine?) {
     my $input_engine = $self->findInputEngine( $asset->input_engine );
     $input_engine->load($asset);
 
-    return $output_engine->export(
+    return $output_engine->_export(
         asset    => $asset,
         minifier => $minifier_engine
     );
