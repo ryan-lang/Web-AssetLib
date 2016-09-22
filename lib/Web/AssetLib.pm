@@ -1,5 +1,5 @@
 package Web::AssetLib;
-our $VERSION = '0.0.1002';
+our $VERSION = '0.0.1003';
 
 use Method::Signatures;
 use Moose;
