@@ -19,9 +19,57 @@ method load ($asset!) {
     my $digest = md5_hex $contents;
     $self->addAssetToCache( $digest => $contents );
 
-    $asset->set_digest($digest);
-    $asset->set_contents($contents);
+    $self->storeAssetContents(
+        asset    => $asset,
+        digest   => $digest,
+        contents => $contents
+    );
 }
 
 no Moose;
 1;
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+
+Web::AssetLib::InputEngine::Content - allows importing an asset as a raw string
+
+=head1 SYNOPSIS
+
+    my $library = My::AssetLib::Library->new(
+        input_engines => [
+            Web::AssetLib::InputEngine::Content->new()
+        ]
+    );
+
+    my $asset = Web::AssetLib::Asset->new(
+        type         => 'javascript',
+        input_engine => 'Content',
+        input_args => { content => "console.log('hello world');", }
+    );
+
+    $library->compile( asset => $asset );
+
+=head1 USAGE
+
+No configuration required. Simply instantiate, and include in your library's
+list of input engines.
+
+Assets using the Content input engine must provide C<< content >> input arg.
+
+=head1 SEE ALSO
+
+L<Web::AssetLib::InputEngine>
+
+L<Web::AssetLib::InputEngine::RemoteFile>
+
+L<Web::AssetLib::InputEngine::LocalFile>
+
+=head1 AUTHOR
+ 
+Ryan Lang <rlang@cpan.org>
+
+=cut
