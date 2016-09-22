@@ -55,3 +55,48 @@ method _exportByType (:$assets!, :$type!, :$minifier?) {
 
 no Moose;
 1;
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+
+Web::AssetLib::OutputEngine::LocalFile - allows exporting an asset or bundle to your local filesystem
+
+=head1 SYNOPSIS
+
+    my $library = My::AssetLib::Library->new(
+        output_engines => [
+            Web::AssetLib::OutputEngine::LocalFile->new(
+                output_path => '/my/local/output/path',
+                link_path => '/output/path/relative/to/webserver'
+            )
+        ]
+    );
+
+=head1 USAGE
+
+Instantiate with C<< output_path >> and C<< link_path >> parameters, and include in your library's
+output engine list.
+
+=head1 ATTRIBUTES
+ 
+=head2 output_path
+ 
+String; the absolute path that the compiled assets should be exported to
+
+=head2 link_path
+ 
+String; the path relative to your webserver root, which points to the L<< /output_path >>.
+Used in generating HTML tags.
+
+=head1 SEE ALSO
+
+L<Web::AssetLib::OutputEngine>
+
+=head1 AUTHOR
+ 
+Ryan Lang <rlang@cpan.org>
+
+=cut

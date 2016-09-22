@@ -42,3 +42,29 @@ func normalizeMimeType ($type!) {
 
 no Moose;
 1;
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+
+Web::AssetLib::Util - core utilties for Web::AssetLib
+
+=head1 FUNCTIONS
+
+=head2 normalizeFileType( $type! )
+
+Converts file type string to a normalized version of that string.
+e.g. "javascript" maps to "js"
+
+=head2 normalizeMimeType( $type! )
+
+Converts file type string to a mime type.
+e.g. "javascript" maps to "text/javascript"
+
+=head1 AUTHOR
+ 
+Ryan Lang <rlang@cpan.org>
+
+=cut

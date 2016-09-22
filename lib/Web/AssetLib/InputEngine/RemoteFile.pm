@@ -54,3 +54,48 @@ method doRequest (:$request!) {
 
 no Moose;
 1;
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+
+Web::AssetLib::InputEngine::RemoteFile - allows importing an asset via a URL
+
+=head1 SYNOPSIS
+
+    my $library = My::AssetLib::Library->new(
+        input_engines => [
+            Web::AssetLib::InputEngine::RemoteFile->new()
+        ]
+    );
+
+    my $asset = Web::AssetLib::Asset->new(
+        type         => 'javascript',
+        input_engine => 'RemoteFile',
+        input_args   => { url => "http://somecdn.com/asset.js", }
+    );
+
+    $library->compile( asset => $asset );
+
+=head1 USAGE
+
+No configuration required. Simply instantiate, and include in your library's
+list of input engines.
+
+Assets using the RemoteFile input engine must provide C<< url >> input arg.
+
+=head1 SEE ALSO
+
+L<Web::AssetLib::InputEngine>
+
+L<Web::AssetLib::InputEngine::LocalFile>
+
+L<Web::AssetLib::InputEngine::Content>
+
+=head1 AUTHOR
+ 
+Ryan Lang <rlang@cpan.org>
+
+=cut

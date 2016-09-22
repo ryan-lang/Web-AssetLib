@@ -70,3 +70,58 @@ method _findAssetPath ($asset!) {
 
 no Moose;
 1;
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+
+Web::AssetLib::InputEngine::LocalFile - allows importing an asset from your local filesystem
+
+=head1 SYNOPSIS
+
+    my $library = My::AssetLib::Library->new(
+        input_engines => [
+            Web::AssetLib::InputEngine::LocalFile->new(
+                search_paths => [ '/my/local/asset/dir' ]
+            )
+        ]
+    );
+
+    # asset existing at "/my/local/asset/dir/myfile.js":
+    my $asset = Web::AssetLib::Asset->new(
+        type         => 'javascript',
+        input_engine => 'LocalFile',
+        input_args   => { path => "myfile.js", }
+    );
+
+    $library->compile( asset => $asset );
+
+=head1 USAGE
+
+Instantiate with C<< search_paths >> parameter, and include in your library's
+input engine list.
+
+Assets using the LocalFile input engine must provide C<< path >> input arg.
+
+=head1 ATTRIBUTES
+ 
+=head2 search_paths
+ 
+Arrayref of local filesystem root paths to search when looking for an
+asset.
+
+=head1 SEE ALSO
+
+L<Web::AssetLib::InputEngine>
+
+L<Web::AssetLib::InputEngine::RemoteFile>
+
+L<Web::AssetLib::InputEngine::Content>
+
+=head1 AUTHOR
+ 
+Ryan Lang <rlang@cpan.org>
+
+=cut
