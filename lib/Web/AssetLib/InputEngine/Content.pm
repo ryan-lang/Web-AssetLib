@@ -13,7 +13,7 @@ method load ($asset!) {
 
     my $contents = $asset->input_args->{content};
 
-    $contents =~ s/^<script type="text\/javascript">//g;
+    $contents =~ s/^(<script type="text\/javascript">|<script>)//g;
     $contents =~ s/<\/script>$//g;
 
     my $digest = md5_hex $contents;

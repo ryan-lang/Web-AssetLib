@@ -91,6 +91,8 @@ method _compileBundle (:$bundle!, :$output_engine!, :$minifier_engine?) {
         }
     }
 
+    $bundle->_set_isCompiled(1);
+
     # output
     return $output_engine->_export(
         bundle   => $bundle,
@@ -101,6 +103,8 @@ method _compileBundle (:$bundle!, :$output_engine!, :$minifier_engine?) {
 method _compileAsset (:$asset!,:$output_engine!, :$minifier_engine?) {
     my $input_engine = $self->findInputEngine( $asset->input_engine );
     $input_engine->load($asset);
+
+    $asset->_set_isCompiled(1);
 
     return $output_engine->_export(
         asset    => $asset,

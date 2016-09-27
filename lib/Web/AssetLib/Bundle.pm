@@ -38,11 +38,20 @@ has '_digest_map' => (
     }
 );
 
+has 'isCompiled' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    writer  => '_set_isCompiled',
+    default => 0
+);
+
 method addAssets (@_) {
+    $self->_set_isCompiled(0);
     return $self->addAsset(@_);
 }
 
 method addAsset (@assets) {
+    $self->_set_isCompiled(0);
     foreach my $asset (@assets) {
         for ( ref($asset) ) {
             when ('Web::AssetLib::Asset') {
@@ -90,6 +99,9 @@ method groupByType () {
 }
 
 method as_html ( :$type!, :$html_attrs = {} ) {
+
+    $self->log->warn('attempting to generate html before bundle is compiled')
+        unless $self->isCompiled;
 
     my @tags;
     my $links = $self->link_paths->{$type};
