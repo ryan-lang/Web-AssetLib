@@ -78,7 +78,17 @@ has 'link_path' => (
     isa => 'Str'
 );
 
+has 'isCompiled' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    writer  => '_set_isCompiled',
+    default => 0
+);
+
 method as_html ( :$html_attrs = {} ) {
+    $self->log->warn('attempting to generate html before asset is compiled')
+        unless $self->isCompiled;
+
     my $tag;
     if ( $self->link_path ) {
         $tag = Web::AssetLib::Util::generateHtmlTag(
