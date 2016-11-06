@@ -5,3 +5,4 @@ requires 'MooseX::Log::Log4perl';
 requires 'Data::Dump';
 requires 'Path::Tiny';
 requires 'HTML::Element';
+requires 'MooseX::Aliases';
