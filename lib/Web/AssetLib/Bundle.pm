@@ -10,11 +10,11 @@ with 'Web::AssetLib::Role::Logger';
 use v5.14;
 no if $] >= 5.018, warnings => "experimental";
 
-# store assets as hashref
 has 'assets' => (
     is      => 'rw',
     isa     => 'ArrayRef[Web::AssetLib::Asset]',
     traits  => [qw/Array/],
+    default => sub { [] },
     handles => {
         _addAsset    => 'push',
         allAssets    => 'elements',
@@ -84,10 +84,12 @@ method addAsset (@assets) {
     }
 }
 
-has 'link_paths' => (
+has 'output' => (
     is      => 'rw',
-    isa     => 'HashRef',
-    default => sub { {} }
+    isa     => 'ArrayRef[Web::AssetLib::Output]',
+    default => sub { [] },
+    traits  => [qw/Array/],
+    handles => { filterOutput => 'grep' }
 );
 
 method groupByType () {
@@ -98,22 +100,22 @@ method groupByType () {
     return $types;
 }
 
+method filterOutputByType ($type!) {
+    return [ $self->filterOutput( sub { $_->type eq $type } ) ];
+}
+
 method as_html ( :$type!, :$html_attrs = {} ) {
 
     $self->log->warn('attempting to generate html before bundle is compiled')
         unless $self->isCompiled;
 
     my @tags;
-    my $links = $self->link_paths->{$type};
-
-    if ( $links && ref $links eq 'ARRAY' ) {
-        foreach my $link (@$links) {
-            my $tag = Web::AssetLib::Util::generateHtmlTag(
-                src  => $link,
-                type => $type
-            );
-            push @tags, $tag;
-        }
+    foreach my $out ( @{ $self->filterOutputByType($type) } ) {
+        my $tag = Web::AssetLib::Util::generateHtmlTag(
+            output     => $out,
+            html_attrs => $html_attrs
+        );
+        push @tags, $tag;
     }
 
     return join( "\n", @tags );

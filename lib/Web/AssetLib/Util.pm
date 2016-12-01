@@ -44,27 +44,47 @@ func normalizeMimeType ($type!) {
     }
 }
 
-func generateHtmlTag (:$src!, :$type!) {
-    my $mime = normalizeMimeType($type);
+func generateHtmlTag (:$output!, :$html_attrs = {}) {
+    my $mime = normalizeMimeType( $output->type );
     my $el;
-    for ($mime) {
-        when ('text/css') {
-            $el = HTML::Element->new(
-                'link',
-                href => $src,
-                rel  => 'stylesheet',
-                type => $mime
-            );
+
+    for ( ref($output) ) {
+        when (/Content/) {
+            for ($mime) {
+                when ('text/css') {
+                    $el = HTML::Element->new( 'style', type => $mime );
+                    $el->push_content( $output->content );
+                }
+                when ('text/javascript') {
+                    $el = HTML::Element->new( 'script', type => $mime );
+                    $el->push_content( $output->content );
+                }
+                when ('image/jpeg') {
+                    croak "image/jpeg content output not supported";
+                }
+            }
         }
-        when ('text/javascript') {
-            $el = HTML::Element->new(
-                'script',
-                src  => $src,
-                type => $mime
-            );
-        }
-        when ('image/jpeg') {
-            $el = HTML::Element->new( 'img', src => $src );
+        when (/Link/) {
+            for ($mime) {
+                when ('text/css') {
+                    $el = HTML::Element->new(
+                        'link',
+                        href => $output->src,
+                        rel  => 'stylesheet',
+                        type => $mime
+                    );
+                }
+                when ('text/javascript') {
+                    $el = HTML::Element->new(
+                        'script',
+                        src  => $output->src,
+                        type => $mime
+                    );
+                }
+                when ('image/jpeg') {
+                    $el = HTML::Element->new( 'img', src => $output->src );
+                }
+            }
         }
     }
 

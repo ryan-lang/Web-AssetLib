@@ -8,7 +8,9 @@ use Web::AssetLib::InputEngine::LocalFile;
 use Web::AssetLib::InputEngine::RemoteFile;
 
 use Web::AssetLib::MinifierEngine::Standard;
+
 use Web::AssetLib::OutputEngine::LocalFile;
+use Web::AssetLib::OutputEngine::String;
 
 extends 'Web::AssetLib::Library';
 
@@ -33,7 +35,8 @@ has '+output_engines' => (
         [   Web::AssetLib::OutputEngine::LocalFile->new(
                 output_path => "$Bin/output/",
                 link_path   => '/static/'
-            )
+            ),
+            Web::AssetLib::OutputEngine::String->new()
         ];
     }
 );

@@ -34,23 +34,22 @@ method _export (:$bundle?, :$asset?, :$minifier?) {
 }
 
 method _exportBundle (:$bundle!,:$minifier?) {
-    my $paths = $self->export(
+    my $output = $self->export(
         assets   => $bundle->assets,
         minifier => $minifier
     );
 
-    $bundle->link_paths($paths);
+    $bundle->output($output);
     return $bundle;
 }
 
 method _exportAsset (:$asset!,:$minifier?) {
-    my $paths = $self->export(
+    my $output = $self->export(
         assets   => [$asset],
         minifier => $minifier
     );
 
-    $asset->link_path( $$paths{ $asset->type }->[0] );
-
+    $asset->output( $output );
     return $asset;
 }
 
@@ -92,9 +91,6 @@ Web::AssetLib::OutputEngine - a base class for writing your own Output Engine
                 type     => $type
             );
         }
-
-        # return an html tag
-        return $self->generateHtmlTag( src => $link_path, type => $type );
     }
 
 =head1 USAGE
