@@ -5,6 +5,7 @@ use Moose;
 use Carp;
 
 use Web::AssetLib::Util;
+use Web::AssetLib::Output::Link;
 
 use Path::Tiny;
 
@@ -27,15 +28,19 @@ has 'link_path' => (
 );
 
 method export (:$assets!, :$minifier?) {
-    my $types        = {};
-    my $output_types = {};
+    my $types  = {};
+    my $output = [];
 
     # categorize into type groups, and seperate concatenated
     # assets from those that stand alone
 
     foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
         if ( $asset->isPassthru ) {
-            push @{ $$output_types{ $asset->type } }, $asset->link_path;
+            push @$output,
+                Web::AssetLib::Output::Link->new(
+                src  => $asset->link_path,
+                type => $asset->type
+                );
         }
         else {
             for ( $asset->type ) {
@@ -86,11 +91,15 @@ method export (:$assets!, :$minifier?) {
                 $output_path->spew_raw($output_contents);
             }
 
-            push @{ $$output_types{$type} }, "$link_path";
+            push @$output,
+                Web::AssetLib::Output::Link->new(
+                src  => "$output_path",
+                type => $type
+                );
         }
     }
 
-    return $output_types;
+    return $output;
 }
 
 no Moose;

@@ -78,6 +78,11 @@ has 'link_path' => (
     isa => 'Str'
 );
 
+has 'output' => (
+    is  => 'rw',
+    isa => 'Maybe[Web::AssetLib::Output]'
+);
+
 has 'isCompiled' => (
     is      => 'ro',
     isa     => 'Bool',
@@ -90,10 +95,10 @@ method as_html ( :$html_attrs = {} ) {
         unless $self->isCompiled;
 
     my $tag;
-    if ( $self->link_path ) {
+    if ( $self->output ) {
         $tag = Web::AssetLib::Util::generateHtmlTag(
-            src  => $self->link_path,
-            type => $self->type
+            output     => $self->output,
+            html_attrs => $html_attrs
         );
     }
 
