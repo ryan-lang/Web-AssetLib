@@ -93,7 +93,7 @@ method export (:$assets!, :$minifier?) {
 
             push @$output,
                 Web::AssetLib::Output::Link->new(
-                src  => "$output_path",
+                src  => "$link_path",
                 type => $type
                 );
         }
