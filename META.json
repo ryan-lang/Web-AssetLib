@@ -46,10 +46,19 @@
             "HTML::Element" : "0",
             "Log::Log4perl" : "0",
             "Method::Signatures" : "0",
+            "Moo" : "0",
             "Moose" : "0",
             "MooseX::Aliases" : "0",
             "MooseX::Log::Log4perl" : "0",
-            "Path::Tiny" : "0"
+            "Path::Tiny" : "0",
+            "Types::Standard" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::Compile" : "0",
+            "Test::More" : "0.98",
+            "Test::Most" : "0"
          }
       }
    },
@@ -65,7 +74,7 @@
          "web" : "https://github.com/ryan-lang/Web-AssetLib"
       }
    },
-   "version" : "0.0.1005",
+   "version" : "0.0.1006",
    "x_contributors" : [
       "Ryan Lang <rlang@me.com>"
    ],
