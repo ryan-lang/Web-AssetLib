@@ -52,11 +52,19 @@ func generateHtmlTag (:$output!, :$html_attrs = {}) {
         when (/Content/) {
             for ($mime) {
                 when ('text/css') {
-                    $el = HTML::Element->new( 'style', type => $mime );
+                    $el = HTML::Element->new(
+                        'style',
+                        type => $mime,
+                        %$html_attrs
+                    );
                     $el->push_content( $output->content );
                 }
                 when ('text/javascript') {
-                    $el = HTML::Element->new( 'script', type => $mime );
+                    $el = HTML::Element->new(
+                        'script',
+                        type => $mime,
+                        %$html_attrs
+                    );
                     $el->push_content( $output->content );
                 }
                 when ('image/jpeg') {
@@ -71,18 +79,24 @@ func generateHtmlTag (:$output!, :$html_attrs = {}) {
                         'link',
                         href => $output->src,
                         rel  => 'stylesheet',
-                        type => $mime
+                        type => $mime,
+                        %$html_attrs
                     );
                 }
                 when ('text/javascript') {
                     $el = HTML::Element->new(
                         'script',
                         src  => $output->src,
-                        type => $mime
+                        type => $mime,
+                        %$html_attrs
                     );
                 }
                 when ('image/jpeg') {
-                    $el = HTML::Element->new( 'img', src => $output->src );
+                    $el = HTML::Element->new(
+                        'img',
+                        src => $output->src,
+                        %$html_attrs
+                    );
                 }
             }
         }
