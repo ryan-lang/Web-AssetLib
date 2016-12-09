@@ -88,7 +88,7 @@ method export (:$assets!, :$minifier?) {
                     );
                 }
 
-                $output_path->spew_raw($output_contents);
+                $output_path->spew_utf8($output_contents);
             }
 
             push @$output,

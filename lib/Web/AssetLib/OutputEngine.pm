@@ -4,7 +4,7 @@ use Method::Signatures;
 use Moose;
 use HTML::Element;
 use Digest;
-use Encode qw(encode);
+use Encode qw(encode encode_utf8);
 use Carp;
 
 use v5.14;
@@ -49,13 +49,13 @@ method _exportAsset (:$asset!,:$minifier?) {
         minifier => $minifier
     );
 
-    $asset->output( $output );
+    $asset->output($output);
     return $asset;
 }
 
 method generateDigest ($contents) {
     my $digest = Digest->new("MD5");
-    $digest->add($contents);
+    $digest->add( encode_utf8($contents) );
     return $digest->hexdigest;
 }
 
