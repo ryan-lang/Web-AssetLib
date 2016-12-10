@@ -3,6 +3,7 @@ package Web::AssetLib::Library;
 use Method::Signatures;
 use Moose;
 use Carp;
+use Scalar::Util qw/blessed/;
 
 use Web::AssetLib::Asset;
 
@@ -34,8 +35,10 @@ has 'output_engines' => (
 method compile (:$bundle, :$asset, :$output_engine = 'LocalFile', 
     :$minifier_engine = 'Standard') {
 
+    # possible to pass in a minifier object here
     $minifier_engine = $self->findMinifierEngine($minifier_engine)
-        if $minifier_engine;
+        if $minifier_engine && !blessed($minifier_engine);
+
     $output_engine = $self->findOutputEngine($output_engine);
 
     if ( $asset && !$bundle ) {
