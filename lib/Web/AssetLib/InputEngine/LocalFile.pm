@@ -33,7 +33,7 @@ method load ($asset!) {
 
     unless ($contents) {
 
-        $contents = $path->slurp_raw;
+        $contents = $path->slurp_utf8;
         $contents =~ s/\xef\xbb\xbf//; # remove BOM if exists
 
         $self->addAssetToCache( $digest => $contents );
