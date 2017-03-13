@@ -14,14 +14,14 @@ BEGIN {
     use Carp;
 
     use Web::AssetLib::Bundle;
-    use TestLibrary;
+    use Test::Web::AssetLib::TestLibrary;
 
-    with qw/TestRole/;
+    with qw/Test::Web::AssetLib::TestRole/;
 
     sub do_tests {
         my ($self) = @_;
 
-        my $library = TestLibrary->new();
+        my $library = Test::Web::AssetLib::TestLibrary->new();
 
         my $bundle;
         lives_ok {

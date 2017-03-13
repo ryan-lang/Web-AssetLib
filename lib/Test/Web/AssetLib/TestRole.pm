@@ -1,4 +1,4 @@
-package TestRole;
+package Test::Web::AssetLib::TestRole;
 
 use Moose::Role;
 
