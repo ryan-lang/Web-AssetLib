@@ -92,4 +92,18 @@ sub missingjs_remote {
     );
 }
 
+sub testjs_async_passthru {
+    return Web::AssetLib::Asset->new(
+        name               => 'testjs_remote',
+        type               => 'javascript',
+        input_engine       => 'RemoteFile',
+        isPassthru         => 1,
+        default_html_attrs => { async => 'async' },
+        input_args         => {
+            url =>
+                'https://ajax.googleapis.com/ajax/libs/jquery/4.1.0/jquery.min.js',
+        }
+    );
+}
+
 1;

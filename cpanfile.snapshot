@@ -14,7 +14,7 @@ DISTRIBUTIONS
     requirements:
       Carp 0
       ExtUtils::MakeMaker 0
-      Mouse 0.40
+      Moose 0
       perl 5.006_002
       strict 0
       warnings 0
@@ -106,12 +106,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Class-Accessor-Lite-0.08
-    pathname: K/KA/KAZUHO/Class-Accessor-Lite-0.08.tar.gz
-    provides:
-      Class::Accessor::Lite 0.08
-    requirements:
-      ExtUtils::MakeMaker 6.36
   Class-Data-Inheritable-0.08
     pathname: T/TM/TMTM/Class-Data-Inheritable-0.08.tar.gz
     provides:
@@ -588,17 +582,17 @@ DISTRIBUTIONS
       Encode 2.10
       Exporter 5.57
       ExtUtils::MakeMaker 6.30
-  IO-Socket-SSL-2.037
-    pathname: S/SU/SULLR/IO-Socket-SSL-2.037.tar.gz
+  IO-Socket-SSL-2.038
+    pathname: S/SU/SULLR/IO-Socket-SSL-2.038.tar.gz
     provides:
-      IO::Socket::SSL 2.037
+      IO::Socket::SSL 2.038
       IO::Socket::SSL::Intercept 2.014
-      IO::Socket::SSL::OCSP_Cache 2.037
-      IO::Socket::SSL::OCSP_Resolver 2.037
+      IO::Socket::SSL::OCSP_Cache 2.038
+      IO::Socket::SSL::OCSP_Resolver 2.038
       IO::Socket::SSL::PublicSuffix undef
-      IO::Socket::SSL::SSL_Context 2.037
-      IO::Socket::SSL::SSL_HANDLE 2.037
-      IO::Socket::SSL::Session_Cache 2.037
+      IO::Socket::SSL::SSL_Context 2.038
+      IO::Socket::SSL::SSL_HANDLE 2.038
+      IO::Socket::SSL::Session_Cache 2.038
       IO::Socket::SSL::Utils 2.014
     requirements:
       ExtUtils::MakeMaker 0
@@ -831,44 +825,6 @@ DISTRIBUTIONS
       Text::ParseWords 0
       perl 5.006001
       version 0.87
-  Module-Build-Pluggable-0.10
-    pathname: T/TO/TOKUHIROM/Module-Build-Pluggable-0.10.tar.gz
-    provides:
-      Module::Build::Pluggable 0.10
-      Module::Build::Pluggable::Base undef
-      Module::Build::Pluggable::GithubMeta undef
-      Module::Build::Pluggable::Repository 0.10
-      Module::Build::Pluggable::Util undef
-      Test::Module::Build::Pluggable undef
-    requirements:
-      CPAN::Meta 0
-      CPAN::Meta::Prereqs 0
-      Class::Accessor::Lite 0
-      Class::Method::Modifiers 0
-      Data::OptList 0
-      File::Basename 0
-      File::Path 0
-      File::Temp 0
-      Module::Build 0.38
-      Module::Load 0
-      Test::SharedFork 0
-      parent 0
-      perl 5.008001
-  Module-Build-Pluggable-CPANfile-0.05
-    pathname: K/KA/KAZEBURO/Module-Build-Pluggable-CPANfile-0.05.tar.gz
-    provides:
-      Module::Build::Pluggable::CPANfile 0.05
-    requirements:
-      CPAN::Meta 0
-      CPAN::Meta::Prereqs 0
-      ExtUtils::CBuilder 0
-      List::Util 1.14
-      Module::Build 0.38
-      Module::Build::Pluggable 0.05
-      Module::CPANfile 0.9010
-      parent 0
-      perl 5.008005
-      version 0.99
   Module-Build-Tiny-0.039
     pathname: L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz
     provides:
@@ -909,20 +865,6 @@ DISTRIBUTIONS
       XSLoader 0
       parent 0
       perl 5.008005
-  Module-CPANfile-1.1002
-    pathname: M/MI/MIYAGAWA/Module-CPANfile-1.1002.tar.gz
-    provides:
-      Module::CPANfile 1.1002
-      Module::CPANfile::Environment undef
-      Module::CPANfile::Prereq undef
-      Module::CPANfile::Prereqs undef
-      Module::CPANfile::Requirement undef
-    requirements:
-      CPAN::Meta 2.12091
-      CPAN::Meta::Prereqs 2.12091
-      ExtUtils::MakeMaker 0
-      JSON::PP 2.27300
-      parent 0
   Module-Implementation-0.09
     pathname: D/DR/DROLSKY/Module-Implementation-0.09.tar.gz
     provides:
@@ -1951,20 +1893,6 @@ DISTRIBUTIONS
       Test::Builder::Module 0
       Test::More 0.47
       perl 5.006
-  Test-SharedFork-0.35
-    pathname: E/EX/EXODIST/Test-SharedFork-0.35.tar.gz
-    provides:
-      Test::SharedFork 0.35
-      Test::SharedFork::Array undef
-      Test::SharedFork::Scalar undef
-      Test::SharedFork::Store undef
-    requirements:
-      ExtUtils::MakeMaker 6.64
-      File::Temp 0
-      Test::Builder 0.32
-      Test::Builder::Module 0
-      Test::More 0.88
-      perl 5.008_001
   Test-Simple-1.302056
     pathname: E/EX/EXODIST/Test-Simple-1.302056.tar.gz
     provides:
