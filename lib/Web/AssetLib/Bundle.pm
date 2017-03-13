@@ -113,7 +113,7 @@ method as_html ( :$type!, :$html_attrs = {} ) {
     foreach my $out ( @{ $self->filterOutputByType($type) } ) {
         my $tag = Web::AssetLib::Util::generateHtmlTag(
             output     => $out,
-            html_attrs => $html_attrs
+            html_attrs => { %{ $out->default_html_attrs }, %$html_attrs }
         );
         push @tags, $tag;
     }

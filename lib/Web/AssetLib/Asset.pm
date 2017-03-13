@@ -59,6 +59,12 @@ has 'isPassthru' => (
     default => 0
 );
 
+has 'default_html_attrs' => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    default => sub { {} }
+);
+
 # private attrs:
 
 has 'contents' => (
@@ -93,6 +99,8 @@ has 'isCompiled' => (
 method as_html ( :$html_attrs = {} ) {
     $self->log->warn('attempting to generate html before asset is compiled')
         unless $self->isCompiled;
+
+    $html_attrs = { %{ $self->default_html_attrs }, %$html_attrs };
 
     my $tag;
     if ( $self->output ) {

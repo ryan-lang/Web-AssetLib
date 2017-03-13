@@ -28,8 +28,12 @@ BEGIN {
 
             $bundle->addAsset( $library->testjs_remote );
             $bundle->addAsset( $library->testcss_remote );
+            $bundle->addAsset( $library->testjs_async_passthru );
 
-            $library->compile( output_engine => 'LocalFile', bundle => $bundle );
+            $library->compile(
+                output_engine => 'LocalFile',
+                bundle        => $bundle
+            );
 
             my $js  = $bundle->as_html( type => 'js' );
             my $css = $bundle->as_html( type => 'css' );

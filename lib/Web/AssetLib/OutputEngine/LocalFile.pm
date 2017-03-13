@@ -38,8 +38,9 @@ method export (:$assets!, :$minifier?) {
         if ( $asset->isPassthru ) {
             push @$output,
                 Web::AssetLib::Output::Link->new(
-                src  => $asset->link_path,
-                type => $asset->type
+                src                => $asset->link_path,
+                type               => $asset->type,
+                default_html_attrs => $asset->default_html_attrs
                 );
         }
         else {
