@@ -1,4 +1,4 @@
-package TestLibrary;
+package Test::Web::AssetLib::TestLibrary;
 
 use Method::Signatures;
 use Moose;
@@ -6,6 +6,7 @@ use FindBin qw($Bin);
 
 use Web::AssetLib::InputEngine::LocalFile;
 use Web::AssetLib::InputEngine::RemoteFile;
+use Web::AssetLib::InputEngine::Content;
 
 use Web::AssetLib::MinifierEngine::Standard;
 
@@ -19,7 +20,8 @@ has '+input_engines' => (
         [   Web::AssetLib::InputEngine::LocalFile->new(
                 search_paths => ["$Bin/assets/"]
             ),
-            Web::AssetLib::InputEngine::RemoteFile->new()
+            Web::AssetLib::InputEngine::RemoteFile->new(),
+            Web::AssetLib::InputEngine::Content->new()
         ];
     }
 );
