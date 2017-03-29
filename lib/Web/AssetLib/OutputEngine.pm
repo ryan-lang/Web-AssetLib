@@ -79,18 +79,8 @@ Web::AssetLib::OutputEngine - a base class for writing your own Output Engine
 
     extends 'Web::AssetLib::OutputEngine';
 
-    method exportByType ( :$assets!, :$type!, :$minifier? ) {
-
-        # concatenate all the assets, and generate a digest
-        my ( $output_contents, $digest ) = $self->concatAssets($assets);
-
-        # call minify, if minifier present
-        if ($minifier) {
-            $output_contents = $minifier->minify(
-                contents => $output_contents,
-                type     => $type
-            );
-        }
+    method export ( :$assets!, :$minifier? ) {
+        # see Web::AssetLib::OutputEngine::LocalFile for examples
     }
 
 =head1 USAGE
@@ -99,34 +89,27 @@ If you have a need for a special file output scenario, you can simply extend thi
 class, and it will plug in to the rest of the Web::AssetLib pipeline.
 
 The only requirement is that your Output Engine implements the 
-L<< exportByType(...)|/"exportByType( assets => $assets, type => $type, [minifier => $minifier])" >>
-method, which returns a properly-formatted HTML tag as a string.
+L<export> method, which returns a properly-formatted HTML tag as a string.
 
 =head1 IMPLEMENTATION
 
-=head2 exportByType(:$assets!, :$type!, :$minifier?)
+=head2 export
 
 Process the arrayref of L<Web::AssetLib::Asset> objects, and export a file with type
 C<< $type >>.  If C<< $mininfier >> is provided (will be a 
 L<Web::AssetLib::MinifierEngine> instance), then it is your responsibility to 
 call L<< $minifier->minify()|Web::AssetLib::MinifierEngine/"minify( :$contents!, :$type! )" >>.
 
-exportByType() should return a properly-formatted HTML tag as a string.
+export() should return a properly-formatted HTML tag as a string.
 
 For help with common ouput operations, see the provided methods below.
 
 =head1 METHODS
 
-=head2 concatAssets( $assets! )
+=head2 generateDigest
  
 Pass in an arrayref of L<Web::AssetLib::Asset> objects, and returns
 a string of the concatenated contents, and an MD5 digest string.
-
-=head2 generateHtmlTag( :$src!, :$type! )
-
-Pass in a C<< $src >> string that points to the output location, and a 
-C<< $type >>, and returns a formatted HTML string.  Currently supports types:
-css, stylesheet, js, javascript, jpeg, jpg.
 
 =head1 SEE ALSO
 

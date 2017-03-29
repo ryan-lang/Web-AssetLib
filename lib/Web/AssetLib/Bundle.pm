@@ -100,7 +100,7 @@ method groupByType () {
     return $types;
 }
 
-method filterOutputByType ($type!) {
+method _filterOutputByType ($type!) {
     return [ $self->filterOutput( sub { $_->type eq $type } ) ];
 }
 
@@ -110,7 +110,7 @@ method as_html ( :$type!, :$html_attrs = {} ) {
         unless $self->isCompiled;
 
     my @tags;
-    foreach my $out ( @{ $self->filterOutputByType($type) } ) {
+    foreach my $out ( @{ $self->_filterOutputByType($type) } ) {
         my $tag = Web::AssetLib::Util::generateHtmlTag(
             output     => $out,
             html_attrs => { %{ $out->default_html_attrs }, %$html_attrs }
@@ -169,18 +169,31 @@ Arrayref of L<Web::AssetLib::Asset> objects
 
 =head1 METHODS
 
-=head2 addAsset(@assets)
+=head2 addAsset
 
-=head2 addAssets(@assets)
+=head2 addAssets
+
+    $bundle->addAsset( 
+        Web::AssetLib::Asset->new(
+            type         => 'javascript',
+            input_engine => 'LocalFile',
+            rank         => -100,
+            input_args => { path => "your/local/path/jquery.min.js", }
+        );
+    );
  
 Adds an asset to the bundle. Accepts an array of L<Web::AssetLib::Asset> 
 instances, or an array of strings. Using a string is a shortcut for defining
 a LocalFile asset, with the type determined by the file extension.
 
-=head2 as_html()
+=head2 as_html
+
+    my $html_tag = $bundle->as_html( type => 'js', html_attrs => { async => 'async' } );
  
 Returns an HTML-formatted string linking to bundle's output location.  Only 
 available after the bundle has been compiled, otherwise returns undef.
+
+C<type> is a required argument.
 
 =head1 AUTHOR
  

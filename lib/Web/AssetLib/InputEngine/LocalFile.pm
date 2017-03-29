@@ -115,6 +115,14 @@ Assets using the LocalFile input engine must provide C<< path >> input arg.
 Arrayref of local filesystem root paths to search when looking for an
 asset.
 
+=head1 METHODS
+ 
+=head2 allSearchPaths
+
+    my @paths = $engine->allSearchPaths();
+ 
+Returns a list of search paths.
+
 =head1 SEE ALSO
 
 L<Web::AssetLib::InputEngine>

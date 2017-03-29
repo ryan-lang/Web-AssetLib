@@ -30,8 +30,9 @@ method load ($asset!) {
         return;
     }
     else {
-        my $request = $self->buildRequest( url => $asset->input_args->{url} );
-        my $contents = $self->doRequest( request => $request );
+        my $request
+            = $self->_buildRequest( url => $asset->input_args->{url} );
+        my $contents = $self->_doRequest( request => $request );
 
         my $digest = md5_hex $contents;
         $self->addAssetToCache( $digest => $contents );
@@ -44,11 +45,11 @@ method load ($asset!) {
     }
 }
 
-method buildRequest (:$url!) {
+method _buildRequest (:$url!) {
     return HTTP::Request->new( GET => $url );
 }
 
-method doRequest (:$request!) {
+method _doRequest (:$request!) {
     my $res = $self->ua->request($request);
     if ( $res->code == 200 ) {
         return $res->decoded_content;

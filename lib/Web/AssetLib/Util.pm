@@ -118,15 +118,33 @@ Web::AssetLib::Util - core utilties for Web::AssetLib
 
 =head1 FUNCTIONS
 
-=head2 normalizeFileType( $type! )
+=head2 normalizeFileType
+
+    my $type =  normalizeFileType( 'stylesheet' );
+    # $type = 'css'
 
 Converts file type string to a normalized version of that string.
 e.g. "javascript" maps to "js"
 
-=head2 normalizeMimeType( $type! )
+=head2 normalizeMimeType
+
+    my $mime =  normalizeMimeType( 'stylesheet' );
+    # $mime = 'text/css'
 
 Converts file type string to a mime type.
 e.g. "javascript" maps to "text/javascript"
+
+=head2 generateHtmlTag
+
+    my $output = ... # a Web::AssetLib::Output object
+
+    my $tag = generateHtmlTag(
+        output     => $output,
+        html_attrs => { async => 'async' }
+    );
+
+Generates an HTML tag for a L<Web::AssetLib::Output> object.  Optionally,
+C<html_attrs> can be provided.
 
 =head1 AUTHOR
  
