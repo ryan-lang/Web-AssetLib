@@ -7,20 +7,6 @@ use Data::Dumper;
 use Digest::MD5 'md5_hex';
 use Web::AssetLib::Util;
 
-has 'fingerprint' => (
-    is      => 'rw',
-    isa     => 'Str',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        local $Data::Dumper::Terse = 1;
-        my $string = sprintf( '%s%s%s',
-            $self->type, $self->input_engine, Dumper( $self->input_args ) );
-        $string =~ s/\s//g;
-        return md5_hex $string;
-    }
-);
-
 has 'rank' => (
     is      => 'rw',
     isa     => 'Num',
@@ -66,6 +52,20 @@ has 'default_html_attrs' => (
 );
 
 # private attrs:
+
+has 'fingerprint' => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        local $Data::Dumper::Terse = 1;
+        my $string = sprintf( '%s%s%s',
+            $self->type, $self->input_engine, Dumper( $self->input_args ) );
+        $string =~ s/\s//g;
+        return md5_hex $string;
+    }
+);
 
 has 'contents' => (
     is     => 'ro',
@@ -154,32 +154,49 @@ being compiled later.  (defaults to 0)
 =head2 input_args
  
 hashref; a place to store arguments that the various input plugins may 
-require for a given asset (see input plugin docs for specific requirments)
+require for a given asset (see input plugin docs for specific requirements)
+
+=head2 isPassthru
+ 
+boolean; assets marked isPassthru will not be minified or concatenated
+
+=head2 default_html_attrs
+ 
+hashref; provides html attribute defaults for C<< as_html() >>
 
 =head1 METHODS
 
-=head2 set_digest($digest)
+=head2 set_digest
+
+    $asset->set_digest( $digest );
  
 Stores the digest in the Asset object. (It is required that this value be set, 
 if writing your own input engine.)
 
-=head2 set_contents($contents)
+=head2 set_contents
+
+    $asset->set_contents( $contents );
  
 Stores the file contents in the Asset object. (It is required that this value be set, 
 if writing your own input engine.)
 
-=head2 fingerprint()
+=head2 fingerprint
+
+    my $fingerprint = $asset->fingerprint();
  
 (Somewhat) unique identifier for asset, created by concatenating and hashing: type, input_engine, and input_args.
 Helpful to identify asset uniqueness prior to opening and reading the file.
 
-=head2 digest()
+=head2 digest
+
+    my $digest = $asset->digest();
  
 Truly unique identifier for asset - an MD5 file digest. Only available after the 
 file has been opened and read (compile() has been called on asset), otherwise returns undef.
 
+=head2 as_html
 
-=head2 html_link()
+    my $html_tag = $asset->as_html( html_attrs => { async => 'async' } );
  
 Returns an HTML-formatted string linking to asset's output location.  Only available after the 
 file has been opened and read (compile() has been called on asset), otherwise returns undef.

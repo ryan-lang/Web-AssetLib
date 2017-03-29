@@ -225,19 +225,19 @@ Arrayref of L<Web::AssetLib::OutputEngine> instance(s) that you wish to use with
 
 =head1 METHODS
  
-=head2 compile( :$bundle, :$asset, :$output_engine = 'LocalFile', :$minifier_engine = 'Standard', :$type?, :$html_attrs? )
+=head2 compile( :$bundle, :$asset, :$output_engine = 'LocalFile', :$minifier_engine = 'Standard' )
  
     $library->compile( bundle => $bundle )
     $library->compile( asset => $asset )
 
-    # compile only Javascript assets in bundle that may contain other types
-    $library->compile( bundle => $bundle, type => 'js' )
+    # specify desired output and/or minifier engine:
+    $library->compile( ..., output_engine => 'String', minifier_engine => 'CustomMinifier' );
 
     # skip minification
     $library->compile( bundle => $bundle, minifier_engine => undef )
 
     print $bundle->as_html();
-    print $library->compile( bundle => $bundle, type => 'js' )->as_html()
+    print $library->compile( bundle => $bundle )->as_html()
     # <script src="/your/output.js" type="text/javascript"></script>
 
 Combines and processes a bundle or asset, sending it through the provided minifer, and 

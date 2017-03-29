@@ -75,7 +75,7 @@ no Moose;
  
 =head1 NAME
 
-Web::AssetLib::OutputEngine::LocalFile - allows exporting an asset or bundle to a string
+Web::AssetLib::OutputEngine::String - allows exporting an asset or bundle to a string
 
 =head1 SYNOPSIS
 

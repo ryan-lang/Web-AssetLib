@@ -77,11 +77,10 @@ class, and it will plug in to the rest of the Web::AssetLib pipeline.
 
 The only requirement is that your Input Engine implements the 
 L<< load( $asset )|/"load( $asset )" >> method.  Load your file however you wish, 
-and then call L<< storeAssetContents(...)|/"storeAssetContents( :$asset!, :$digest!, :$contents! )" >>.
+and then call L<storeAssetContents>.
 
 Optionally, you may utilize the cache, with the 
-L<< addAssetToCache()|/"addAssetToCache( $digest => $contents )" >> and 
-L<< getAssetFromCache()|/"getAssetFromCache( $digest )" >> methods.
+L<addAssetToCache> and L<getAssetFromCache> methods.
 
 =head1 IMPLEMENTATION
 
@@ -89,12 +88,17 @@ L<< getAssetFromCache()|/"getAssetFromCache( $digest )" >> methods.
 
 Load/consume an asset represented by C<< $asset >>, which will be a 
 L<Web::AssetLib::Asset> object.  Load however you'd like, then call
-L<< storeAssetContents()|/"storeAssetContents( :$asset!, :$digest!, :$contents! )" >> 
-to store the file for later use in the pipeline.
+L<storeAssetContents> to store the file for later use in the pipeline.
 
 =head1 METHODS
 
-=head2 storeAssetContents( :$asset!, :$digest!, :$contents! )
+=head2 storeAssetContents
+
+    $engine->storeAssetContents(
+        asset    => $asset,
+        digest   => $digest,
+        contents => $contents
+    );
 
 Associates the file contents and digest with the asset instance.  C<< $asset >>
 should be a L<Web::AssetLib::Asset> object, and C<< $contents >> and C<< $digest >>
@@ -103,13 +107,21 @@ must be strings.
 This is the only method that must be called when you implement the 
 L<< load()|/"load( $asset )" >> method.
 
-=head2 addAssetToCache( $digest => $contents )
+All arguments are required.
+
+=head2 addAssetToCache
+
+    $engine->addAssetToCache(
+        digest => $digest
+    );
  
 Creates a mapping between your file C<< $digest >> and file C<< $contents >> in the
 cache.  It is reccomended that the cache be utilized when implementing L<< load()|/"load( $asset )" >>
 but it is not a requirement.
 
-=head2 getAssetFromCache( $digest )
+=head2 getAssetFromCache
+
+    my $asset = $engine->getAssetFromCache( $digest );
  
 Returns file contents associated with the digest if present in cache, otherwise
 returns undef. It is reccomended that the cache be utilized when 
