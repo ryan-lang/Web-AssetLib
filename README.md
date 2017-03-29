@@ -4,7 +4,7 @@ Web::AssetLib - Moose-based pluggable library manager for compiling and serving 
 
 # VERSION
 
-version 0.041
+version 0.042
 
 # SYNOPSIS
 
@@ -75,7 +75,7 @@ This documentation uses method signature notation as defined by [Method::Signatu
 
 Basic usage is covered in [Web::AssetLib::Library](https://metacpan.org/pod/Web::AssetLib::Library).
 
-The following base classes are provided for extensibility:
+The following base classes are provided for extendability:
 
 - [Web::AssetLib::Library](https://metacpan.org/pod/Web::AssetLib::Library) — a base class for writing your own asset library, and configuring the various pipeline plugins
 - [Web::AssetLib::InputEngine](https://metacpan.org/pod/Web::AssetLib::InputEngine) — a base class for writing your own Input Engine
