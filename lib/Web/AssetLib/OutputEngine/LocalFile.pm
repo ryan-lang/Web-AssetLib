@@ -27,69 +27,44 @@ has 'link_path' => (
     required => 1
 );
 
+# asset name will be [name].[hash].[type]
+has 'prepend_asset_name' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1
+);
+
 method export (:$assets!, :$minifier?) {
-    my $types  = {};
     my $output = [];
 
-    # categorize into type groups, and seperate concatenated
-    # assets from those that stand alone
+    my $assets_by_type = $self->sortAssetsByType($assets);
 
-    foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
-        if ( $asset->isPassthru ) {
-            push @$output,
-                Web::AssetLib::Output::Link->new(
-                src                => $asset->link_path,
-                type               => $asset->type,
-                default_html_attrs => $asset->default_html_attrs
-                );
-        }
-        else {
-            for ( $asset->type ) {
-                when (/css|js/) {
+    foreach my $type ( keys %$assets_by_type ) {
+        foreach my $asset ( @{ $$assets_by_type{$type} } ) {
 
-                    # should concatenate
-                    $$types{ $asset->type }{_CONCAT_}
-                        .= $asset->contents . "\n\r\n\r";
-                }
-                default {
-                    $$types{ $asset->type }{ $asset->digest }
-                        = $asset->contents;
-                }
-            }
-        }
-    }
-
-    foreach my $type ( keys %$types ) {
-        foreach my $id ( keys %{ $$types{$type} } ) {
-            my $output_contents = $$types{$type}{$id};
-
+            my $contents = ref($asset) ? $asset->contents : $asset;
+            my $name     = ref($asset) ? $asset->name     : 'bundle';
             my $digest
-                = $id eq '_CONCAT_'
-                ? $self->generateDigest($output_contents)
-                : $id;
+                = ref($asset)
+                ? $asset->digest
+                : $self->generateDigest($contents);
 
-            my $filename    = "$digest.$type";
+            my $filename    = "$name.$digest.$type";
             my $output_path = path( $self->output_path )->child($filename);
             my $link_path   = path( $self->link_path )->child($filename);
-
-# # output pre-minify
-# my $output_path_debug = path( $self->output_path )->child($filename.".orig.$type");
-# unless($output_path_debug->exists){
-#     $output_path_debug->touchpath;
-#     $output_path_debug->spew_utf8($output_contents);
-# }
 
             unless ( $output_path->exists ) {
                 $output_path->touchpath;
 
-                if ($minifier) {
-                    $output_contents = $minifier->minify(
-                        contents => $output_contents,
+                if ( $minifier && ( ref($asset) ? !$asset->isPassthru : 1 ) )
+                {
+                    $contents = $minifier->minify(
+                        contents => $contents,
                         type     => $type
                     );
                 }
 
-                $output_path->spew_utf8($output_contents);
+                $output_path->spew_utf8($contents);
             }
 
             push @$output,

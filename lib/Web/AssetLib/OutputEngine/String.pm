@@ -14,43 +14,18 @@ no if $] >= 5.018, warnings => "experimental";
 extends 'Web::AssetLib::OutputEngine';
 
 method export (:$assets!, :$minifier?) {
-    my $types  = {};
     my $output = [];
 
-    # categorize into type groups, and seperate concatenated
-    # assets from those that stand alone
+    my $assets_by_type = $self->sortAssetsByType($assets);
 
-    foreach my $asset ( sort { $a->rank <=> $b->rank } @$assets ) {
-        if ( $asset->isPassthru ) {
-            push @$output,
-                Web::AssetLib::Output::Link->new(
-                type => $asset->type,
-                src  => $asset->link_path
-                );
-        }
-        else {
-            for ( $asset->type ) {
-                when (/css|js/) {
+    foreach my $type ( keys %$assets_by_type ) {
+        foreach my $asset ( @{ $$assets_by_type{$type} } ) {
 
-                    # should concatenate
-                    $$types{ $asset->type }{_CONCAT_}
-                        .= $asset->contents . "\n\r\n\r";
-                }
-                default {
-                    $$types{ $asset->type }{ $asset->digest }
-                        = $asset->contents;
-                }
-            }
-        }
-    }
+            my $contents = ref($asset) ? $asset->contents : $asset;
 
-    foreach my $type ( keys %$types ) {
-        foreach my $id ( keys %{ $$types{$type} } ) {
-            my $output_contents = $$types{$type}{$id};
-
-            if ($minifier) {
-                $output_contents = $minifier->minify(
-                    contents => $output_contents,
+            if ( $minifier && ( ref($asset) ? !$asset->isPassthru : 1 ) ) {
+                $contents = $minifier->minify(
+                    contents => $contents,
                     type     => $type
                 );
             }
@@ -58,7 +33,7 @@ method export (:$assets!, :$minifier?) {
             push @$output,
                 Web::AssetLib::Output::Content->new(
                 type    => $type,
-                content => $output_contents
+                content => $contents
                 );
         }
     }

@@ -81,7 +81,17 @@ L<remote file|Web::AssetLib::InputEngine::RemoteFile>, and L<string|Web::AssetLi
 inputs, minification with L<CSS::Minifier> and L<JavaScript::Minifier>, and 
 L<local file|Web::AssetLib::OutputEngine::LocalFile> output.
 
-Possibilities for future plugins: Amazon S3 output, other CDN outputs, SASS input, etc.
+Currently available plugins:
+
+=over 4
+ 
+=item *
+
+L<Web::AssetLib::OutputEngine::S3> - output to Amazon S3 bucket
+
+=back
+
+Possibilities for future plugins: non-S3 CDN outputs, SASS input, etc.
 
 This documentation uses method signature notation as defined by L<Method::Signatures>.
 
