@@ -59,6 +59,45 @@ method generateDigest ($contents) {
     return $digest->hexdigest;
 }
 
+method sortAssetsByType ($assets!) {
+    my $assets_by_type = {};
+
+    my @passthru;
+    my @nonpassthru;
+
+    # sort into passthru/nonpasstru
+    foreach ( sort { $a->rank <=> $b->rank } @$assets ) {
+        if ( $_->isPassthru ) {
+            push @passthru, $_;
+        }
+        else {
+            push @nonpassthru, $_;
+        }
+    }
+
+    # non-concatenated assets get pushed onto
+    # lists by type
+    foreach my $asset (@passthru) {
+        push @{ $$assets_by_type{ $asset->type } }, $asset;
+    }
+
+    # concatenated assets get appended to
+    # strings by type
+    my $concatenated_by_type = {};
+    foreach my $asset (@nonpassthru) {
+        $$concatenated_by_type{ $asset->type }
+            .= $asset->contents . "\n\r\n\r";
+    }
+
+    # once strings are fully concatenated, push onto
+    # main stack
+    foreach my $type ( keys %{$concatenated_by_type} ) {
+        push @{ $$assets_by_type{$type} }, $$concatenated_by_type{$type};
+    }
+
+    return $assets_by_type;
+}
+
 no Moose;
 1;
 

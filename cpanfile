@@ -10,6 +10,7 @@ requires 'HTML::Element';
 requires 'MooseX::Aliases';
 requires 'HTTP::Request';
 requires 'LWP::UserAgent';
+requires 'JavaScript::Beautifier';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';

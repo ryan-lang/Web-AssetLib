@@ -4,7 +4,7 @@ Web::AssetLib - Moose-based pluggable library manager for compiling and serving 
 
 # VERSION
 
-version 0.042
+version 0.05
 
 # SYNOPSIS
 
@@ -67,7 +67,11 @@ ones.  Out of the box, Web::AssetLib supports [local file](https://metacpan.org/
 inputs, minification with [CSS::Minifier](https://metacpan.org/pod/CSS::Minifier) and [JavaScript::Minifier](https://metacpan.org/pod/JavaScript::Minifier), and 
 [local file](https://metacpan.org/pod/Web::AssetLib::OutputEngine::LocalFile) output.
 
-Possibilities for future plugins: Amazon S3 output, other CDN outputs, SASS input, etc.
+Currently available plugins:
+
+- [Web::AssetLib::OutputEngine::S3](https://metacpan.org/pod/Web::AssetLib::OutputEngine::S3) - output to Amazon S3 bucket
+
+Possibilities for future plugins: non-S3 CDN outputs, SASS input, etc.
 
 This documentation uses method signature notation as defined by [Method::Signatures](https://metacpan.org/pod/Method::Signatures).
 

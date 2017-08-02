@@ -7,6 +7,11 @@ use Data::Dumper;
 use Digest::MD5 'md5_hex';
 use Web::AssetLib::Util;
 
+has 'name' => (
+    is  => 'rw',
+    isa => 'Str'
+);
+
 has 'rank' => (
     is      => 'rw',
     isa     => 'Num',
