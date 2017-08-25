@@ -14,7 +14,10 @@ my %FILE_TYPES = (
     css        => 'css',
     stylesheet => 'css',
     jpeg       => 'jpg',
-    jpg        => 'jpg'
+    jpg        => 'jpg',
+    woff       => 'woff',
+    woff2      => 'woff',
+    svg        => 'svg'
 );
 
 my %MIME_TYPES = (
@@ -23,7 +26,10 @@ my %MIME_TYPES = (
     css        => 'text/css',
     stylesheet => 'text/css',
     jpg        => 'image/jpeg',
-    jpeg       => 'image/jpeg'
+    jpeg       => 'image/jpeg',
+    woff       => 'application/font-woff',
+    woff2      => 'application/font-woff',
+    svg        => 'image/svg+xml'
 );
 
 func normalizeFileType ($type!) {
@@ -67,8 +73,11 @@ func generateHtmlTag (:$output!, :$html_attrs = {}) {
                     );
                     $el->push_content( $output->content );
                 }
-                when ('image/jpeg') {
-                    croak "image/jpeg content output not supported";
+                when ('image/svg+xml') {
+                    return $output->content;
+                }
+                default {
+                    croak "$mime content output not supported";
                 }
             }
         }
@@ -97,6 +106,18 @@ func generateHtmlTag (:$output!, :$html_attrs = {}) {
                         src => $output->src,
                         %$html_attrs
                     );
+                }
+                when ('image/svg+xml') {
+                    $el = HTML::Element->new(
+                        'object',
+                        type => $mime,
+                        data => $output->src,
+                        %$html_attrs
+                    );
+                    $el->push_content('Your browser does not support SVG');
+                }
+                default {
+                    croak "$mime link output not supported";
                 }
             }
         }

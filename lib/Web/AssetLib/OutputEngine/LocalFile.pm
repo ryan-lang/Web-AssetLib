@@ -42,36 +42,58 @@ method export (:$assets!, :$minifier?) {
     foreach my $type ( keys %$assets_by_type ) {
         foreach my $asset ( @{ $$assets_by_type{$type} } ) {
 
-            my $contents = ref($asset) ? $asset->contents : $asset;
-            my $name     = ref($asset) ? $asset->name     : 'bundle';
-            my $digest
-                = ref($asset)
-                ? $asset->digest
-                : $self->generateDigest($contents);
-
-            my $filename    = "$name.$digest.$type";
-            my $output_path = path( $self->output_path )->child($filename);
-            my $link_path   = path( $self->link_path )->child($filename);
-
-            unless ( $output_path->exists ) {
-                $output_path->touchpath;
-
-                if ( $minifier && ( ref($asset) ? !$asset->isPassthru : 1 ) )
-                {
-                    $contents = $minifier->minify(
-                        contents => $contents,
-                        type     => $type
+            if ( ref($asset) && $asset->isPassthru ) {
+                push @$output,
+                    Web::AssetLib::Output::Link->new(
+                    src  => $asset->link_path,
+                    type => $type
                     );
+            }
+            else {
+                my $contents = ref($asset) ? $asset->contents : $asset;
+                my $name = ( ref($asset) ? $asset->name : undef ) // 'bundle';
+                my $digest
+                    = ref($asset)
+                    ? $asset->digest
+                    : $self->generateDigest($contents);
+
+                my $filename
+                    = (    ref($asset)
+                        && $asset->useOriginalFilename
+                        && $asset->original_filename )
+                    ? $asset->original_filename
+                    : "$name.$digest.$type";
+
+                if(ref($asset) && $asset->output_args->{output_subdir}){
+                    $filename = $asset->output_args->{output_subdir} . "/$filename";
                 }
 
-                $output_path->spew_utf8($contents);
-            }
+                my $output_path
+                    = path( $self->output_path )->child($filename);
+                my $link_path = path( $self->link_path )->child($filename);
 
-            push @$output,
-                Web::AssetLib::Output::Link->new(
-                src  => "$link_path",
-                type => $type
-                );
+                unless ( $output_path->exists ) {
+                    $self->log->debug("emitted: $output_path");
+                    $output_path->touchpath;
+
+                    if ( $minifier
+                        && ( ref($asset) ? !$asset->isPassthru : 1 ) )
+                    {
+                        $contents = $minifier->minify(
+                            contents => $contents,
+                            type     => $type
+                        );
+                    }
+
+                    $output_path->spew_raw($contents);
+                }
+
+                push @$output,
+                    Web::AssetLib::Output::Link->new(
+                    src  => "$link_path",
+                    type => $type
+                    );
+            }
         }
     }
 

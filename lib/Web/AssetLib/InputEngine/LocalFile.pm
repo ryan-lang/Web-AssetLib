@@ -3,7 +3,7 @@ package Web::AssetLib::InputEngine::LocalFile;
 use Method::Signatures;
 use Moose;
 use Carp;
-
+use Web::AssetLib::Asset;
 use Path::Tiny;
 
 use v5.14;
@@ -19,31 +19,39 @@ has 'search_paths' => (
     handles => { 'allSearchPaths' => 'elements' }
 );
 
-method load ($asset!) {
+method load ($asset!, $bundle?) {
     croak sprintf( "%s requires 'path' asset input_arg", ref($self) )
         unless $asset->input_args->{path};
 
     my $path = $self->_findAssetPath($asset);
 
-    my $digest = $path->digest;
+    $asset->original_filename( $path->basename );
 
-    # will return undef if asset not in cache,
-    # otherwise will return contents from previous read
-    my $contents = $self->getAssetFromCache($digest);
-
-    unless ($contents) {
-
-        $contents = $path->slurp_utf8;
-        $contents =~ s/\xef\xbb\xbf//; # remove BOM if exists
-
-        $self->addAssetToCache( $digest => $contents );
+    if ( $asset->isPassthru ) {
+        $asset->link_path("$path");
+        return;
     }
+    else {
+        my $digest = $path->digest;
 
-    $self->storeAssetContents(
-        asset    => $asset,
-        digest   => $digest,
-        contents => $contents
-    );
+        # will return undef if asset not in cache,
+        # otherwise will return contents from previous read
+        my $contents = $self->getAssetFromCache($digest);
+
+        unless ($contents) {
+
+            $contents = $path->slurp_raw;
+            $contents =~ s/\xef\xbb\xbf//;    # remove BOM if exists
+
+            $self->addAssetToCache( $digest => $contents );
+        }
+
+        $self->storeAssetContents(
+            asset    => $asset,
+            digest   => $digest,
+            contents => $contents
+        );
+    }
 }
 
 # search all the included search paths for the asset
@@ -69,6 +77,54 @@ method _findAssetPath ($asset!) {
         $asset->input_args->{path},
         join( ', ', $self->allSearchPaths )
     );
+}
+
+# utility method to "expand" a path into several assets
+method collectInPath (:$path!, :$match?, :$options = {}) {
+    foreach my $sPath ( $self->allSearchPaths ) {
+        next unless $sPath;
+        $sPath = path($sPath);
+
+        # does the search path exist?
+        unless ( $sPath->exists ) {
+            $self->log->warn("skipping path '$sPath' - does not exist");
+            next;
+        }
+
+        $path = $sPath->child($path);
+
+        unless ( $path->is_dir ) {
+            croak "target path ($path) must be a directory";
+        }
+
+        my @children;
+        if ($match) {
+            @children = $path->children($match);
+        }
+        else {
+            @children = $path->children;
+        }
+
+        my @assets;
+        foreach my $child (@children) {
+
+            # get a path to the found assets, must
+            # be relative for search in _findAssetPath later
+            my $relpath = $child->relative($sPath);
+
+            my $input_args = $$options{input_args} // {};
+            delete $$options{input_args};
+
+            push @assets,
+                Web::AssetLib::Asset->new(
+                name       => $child->basename,
+                input_args => { path => "$relpath", %$input_args },
+                %$options
+                );
+        }
+
+        return @assets;
+    }
 }
 
 no Moose;

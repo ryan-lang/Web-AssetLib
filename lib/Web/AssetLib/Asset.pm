@@ -38,13 +38,31 @@ has 'input_engine' => (
     default => 'LocalFile'
 );
 
-has 'input_args' => (
+has [qw/input_args output_args/] => (
     is      => 'rw',
     isa     => 'HashRef',
     default => sub { {} }
 );
 
+# input source will be emitted as-is
 has 'isPassthru' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0
+);
+
+# will not be bundled with other assets
+# in a single file
+has 'noBundle' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0
+);
+
+# turning this on will pass original
+# filename through as output, but be careful!
+# could break caching
+has 'useOriginalFilename' => (
     is      => 'rw',
     isa     => 'Bool',
     default => 0
@@ -85,6 +103,11 @@ has 'digest' => (
 );
 
 has 'link_path' => (
+    is  => 'rw',
+    isa => 'Str'
+);
+
+has 'original_filename' => (
     is  => 'rw',
     isa => 'Str'
 );
