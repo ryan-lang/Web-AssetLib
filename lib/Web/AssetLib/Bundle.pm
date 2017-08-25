@@ -104,13 +104,18 @@ method _filterOutputByType ($type!) {
     return [ $self->filterOutput( sub { $_->type eq $type } ) ];
 }
 
-method as_html ( :$type!, :$html_attrs = {} ) {
+method as_html ( :$type, :$html_attrs = {} ) {
 
     $self->log->warn('attempting to generate html before bundle is compiled')
         unless $self->isCompiled;
 
+    my @outs
+        = $type
+        ? @{ $self->_filterOutputByType($type) }
+        : sort { $a->type cmp $b->type } @{ $self->output };
+
     my @tags;
-    foreach my $out ( @{ $self->_filterOutputByType($type) } ) {
+    foreach my $out (@outs) {
         my $tag = Web::AssetLib::Util::generateHtmlTag(
             output     => $out,
             html_attrs => { %{ $out->default_html_attrs }, %$html_attrs }
