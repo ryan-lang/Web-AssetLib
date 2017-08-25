@@ -67,7 +67,7 @@ method sortAssetsByType ($assets!) {
 
     # sort into passthru/nonpasstru
     foreach ( sort { $a->rank <=> $b->rank } @$assets ) {
-        if ( $_->isPassthru ) {
+        if ( $_->isPassthru || $_->noBundle ) {
             push @passthru, $_;
         }
         else {

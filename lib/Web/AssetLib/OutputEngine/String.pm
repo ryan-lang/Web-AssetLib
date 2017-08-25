@@ -21,6 +21,11 @@ method export (:$assets!, :$minifier?) {
     foreach my $type ( keys %$assets_by_type ) {
         foreach my $asset ( @{ $$assets_by_type{$type} } ) {
 
+            if ( ref($asset) && $asset->isPassthru ) {
+                croak
+                    "setting isPassthru = true is invalid for String output";
+            }
+
             my $contents = ref($asset) ? $asset->contents : $asset;
 
             if ( $minifier && ( ref($asset) ? !$asset->isPassthru : 1 ) ) {
