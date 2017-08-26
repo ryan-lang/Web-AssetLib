@@ -88,7 +88,7 @@ method export (:$assets!, :$minifier?) {
                     $output_path->spew_raw($contents);
                     $self->log->debug("emitted: $output_path");
 
-                    if ( $asset->source_map_contents ) {
+                    if ( ref($asset) && $asset->source_map_contents ) {
                         my $srcmap_path = path( $self->output_path )
                             ->child( $asset->source_map_name );
 
