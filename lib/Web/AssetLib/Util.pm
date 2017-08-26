@@ -17,7 +17,8 @@ my %FILE_TYPES = (
     jpg        => 'jpg',
     woff       => 'woff',
     woff2      => 'woff',
-    svg        => 'svg'
+    svg        => 'svg',
+    map        => 'map'
 );
 
 my %MIME_TYPES = (
@@ -29,7 +30,8 @@ my %MIME_TYPES = (
     jpeg       => 'image/jpeg',
     woff       => 'application/font-woff',
     woff2      => 'application/font-woff',
-    svg        => 'image/svg+xml'
+    svg        => 'image/svg+xml',
+    map        => 'application/json'
 );
 
 func normalizeFileType ($type!) {
