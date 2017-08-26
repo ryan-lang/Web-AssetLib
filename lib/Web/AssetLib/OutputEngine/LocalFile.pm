@@ -64,8 +64,9 @@ method export (:$assets!, :$minifier?) {
                     ? $asset->original_filename
                     : "$name.$digest.$type";
 
-                if(ref($asset) && $asset->output_args->{output_subdir}){
-                    $filename = $asset->output_args->{output_subdir} . "/$filename";
+                if ( ref($asset) && $asset->output_args->{output_subdir} ) {
+                    $filename
+                        = $asset->output_args->{output_subdir} . "/$filename";
                 }
 
                 my $output_path
@@ -73,7 +74,6 @@ method export (:$assets!, :$minifier?) {
                 my $link_path = path( $self->link_path )->child($filename);
 
                 unless ( $output_path->exists ) {
-                    $self->log->debug("emitted: $output_path");
                     $output_path->touchpath;
 
                     if ( $minifier
@@ -86,6 +86,16 @@ method export (:$assets!, :$minifier?) {
                     }
 
                     $output_path->spew_raw($contents);
+                    $self->log->debug("emitted: $output_path");
+
+                    if ( ref($asset) && $asset->source_map_contents ) {
+                        my $srcmap_path = path( $self->output_path )
+                            ->child( $asset->source_map_name );
+
+                        $srcmap_path->spew_raw( $asset->source_map_contents );
+
+                        $self->log->debug("emitted: $srcmap_path");
+                    }
                 }
 
                 push @$output,

@@ -68,6 +68,10 @@ method _findAssetPath ($asset!) {
 
         my $target_path = $path->child( $asset->input_args->{path} );
         if ( $target_path->exists ) {
+
+            # this is where the source map should be too
+            $self->_ingestSourceMap( $path, $asset );
+
             return $target_path;
         }
     }
@@ -77,6 +81,26 @@ method _findAssetPath ($asset!) {
         $asset->input_args->{path},
         join( ', ', $self->allSearchPaths )
     );
+}
+
+method _ingestSourceMap ($path!, $asset!) {
+    if ( my $source_map_name = $asset->input_args->{source_map} ) {
+
+        my $target = $path->child($source_map_name);
+
+        $asset->_set_source_map_name( $target->basename );
+
+        unless ( $target->exists ) {
+            $self->log->warn(
+                sprintf(
+                    'source map name provided (%s), but none found at path: %s',
+                    $source_map_name, $target
+                )
+            );
+            return;
+        }
+        $asset->_set_source_map_contents( $target->slurp_raw );
+    }
 }
 
 # utility method to "expand" a path into several assets

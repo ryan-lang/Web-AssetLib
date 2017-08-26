@@ -124,6 +124,18 @@ has 'isCompiled' => (
     default => 0
 );
 
+has 'source_map_contents' => (
+    is     => 'ro',
+    isa    => 'Str',
+    writer => '_set_source_map_contents'
+);
+
+has 'source_map_name' => (
+    is     => 'ro',
+    isa    => 'Str',
+    writer => '_set_source_map_name'
+);
+
 method as_html ( :$html_attrs = {} ) {
     $self->log->warn('attempting to generate html before asset is compiled')
         unless $self->isCompiled;
