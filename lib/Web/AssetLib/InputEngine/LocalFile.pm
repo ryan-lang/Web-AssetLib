@@ -11,6 +11,12 @@ no if $] >= 5.018, warnings => "experimental";
 
 extends 'Web::AssetLib::InputEngine';
 
+has 'ignore_missing' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0
+);
+
 has 'search_paths' => (
     is      => 'rw',
     isa     => 'ArrayRef',
@@ -25,32 +31,34 @@ method load ($asset!, $bundle?) {
 
     my $path = $self->_findAssetPath($asset);
 
-    $asset->original_filename( $path->basename );
+    if ($path) {
+        $asset->original_filename( $path->basename );
 
-    if ( $asset->isPassthru ) {
-        $asset->link_path("$path");
-        return;
-    }
-    else {
-        my $digest = $path->digest;
-
-        # will return undef if asset not in cache,
-        # otherwise will return contents from previous read
-        my $contents = $self->getAssetFromCache($digest);
-
-        unless ($contents) {
-
-            $contents = $path->slurp_raw;
-            $contents =~ s/\xef\xbb\xbf//;    # remove BOM if exists
-
-            $self->addAssetToCache( $digest => $contents );
+        if ( $asset->isPassthru ) {
+            $asset->link_path("$path");
+            return;
         }
+        else {
+            my $digest = $path->digest;
 
-        $self->storeAssetContents(
-            asset    => $asset,
-            digest   => $digest,
-            contents => $contents
-        );
+            # will return undef if asset not in cache,
+            # otherwise will return contents from previous read
+            my $contents = $self->getAssetFromCache($digest);
+
+            unless ($contents) {
+
+                $contents = $path->slurp_raw;
+                $contents =~ s/\xef\xbb\xbf//;    # remove BOM if exists
+
+                $self->addAssetToCache( $digest => $contents );
+            }
+
+            $self->storeAssetContents(
+                asset    => $asset,
+                digest   => $digest,
+                contents => $contents
+            );
+        }
     }
 }
 
@@ -76,11 +84,20 @@ method _findAssetPath ($asset!) {
         }
     }
 
-    croak sprintf(
+    my $missing_msg = sprintf(
         "could not find asset %s in search paths (%s)",
         $asset->input_args->{path},
         join( ', ', $self->allSearchPaths )
     );
+
+    if ( $self->ignore_missing ) {
+        $self->log->warn($missing_msg);
+    }
+    else {
+        croak $missing_msg;
+    }
+
+    return undef;
 }
 
 method _ingestSourceMap ($path!, $asset!) {
