@@ -1,5 +1,5 @@
 package Web::AssetLib;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use Method::Signatures;
 use Moose;
@@ -18,7 +18,7 @@ Web::AssetLib - Moose-based pluggable library manager for compiling and serving 
 
 =head1 VERSION
  
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
