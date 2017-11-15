@@ -35,7 +35,7 @@ method load ($asset!, $bundle?) {
         $asset->original_filename( $path->basename );
 
         if ( $asset->isPassthru ) {
-            $asset->link_path("$path");
+            $asset->link_path($asset->input_args->{path});
             return;
         }
         else {
