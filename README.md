@@ -4,7 +4,7 @@ Web::AssetLib - Moose-based pluggable library manager for compiling and serving 
 
 # VERSION
 
-version 0.08
+version 0.081
 
 # SYNOPSIS
 
