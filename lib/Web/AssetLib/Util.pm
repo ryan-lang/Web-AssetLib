@@ -8,6 +8,10 @@ use HTML::Element;
 use v5.14;
 no if $] >= 5.018, warnings => "experimental";
 
+use Exporter qw( import );
+our %EXPORT_TAGS = ( 'all' => [ 'normalizeFileType', 'normalizeMimeType', 'getFileExtension' ], );
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, );
+
 my %FILE_TYPES = (
     js         => 'js',
     javascript => 'js',
@@ -50,6 +54,11 @@ func normalizeMimeType ($type!) {
     else {
         croak "could not map type '$type'";
     }
+}
+
+func getFileExtension ($string!) {
+    $string =~ /\.([0-9a-z]+)$/g;
+    return $1;
 }
 
 func generateHtmlTag (:$output!, :$html_attrs = {}) {
